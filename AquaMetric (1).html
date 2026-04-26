@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AquaMetric — Digital Water Analyser</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a1628; --bg2: #0f2040; --card: #112244; --border: #1e3a6e;
+    --accent: #00d4ff; --accent2: #00ff9d; --warn: #ffb800;
+    --danger: #ff4455; --text: #e8f4ff; --muted: #7a9cc0; --ok: #00ff9d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(0,212,255,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(0,255,157,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(0,100,200,0.08) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
+
+  .lang-bar { display: flex; justify-content: flex-end; gap: 6px; margin-bottom: 28px; animation: fadeDown 0.5s ease; }
+  .lang-btn {
+    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px;
+    padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s;
+  }
+  .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .lang-btn.active { background: rgba(0,212,255,0.12); border-color: var(--accent); color: var(--accent); }
+
+  header { text-align: center; margin-bottom: 48px; animation: fadeDown 0.8s ease; }
+  .header-badge {
+    display: inline-block; font-family: 'Space Mono', monospace; font-size: 11px;
+    letter-spacing: 3px; color: var(--accent); border: 1px solid var(--accent);
+    padding: 4px 14px; border-radius: 20px; margin-bottom: 16px; text-transform: uppercase;
+  }
+  header h1 {
+    font-size: clamp(28px, 5vw, 48px); font-weight: 800; line-height: 1.1;
+    background: linear-gradient(135deg, #e8f4ff 0%, var(--accent) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;
+  }
+  header p { color: var(--muted); font-size: 15px; font-family: 'Space Mono', monospace; }
+  .wave { width: 60px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); margin: 16px auto; border-radius: 2px; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 20px; animation: fadeUp 0.6s ease both; }
+  .card-title {
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+    font-family: 'Space Mono', monospace; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+  }
+  .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .input-group { display: flex; flex-direction: column; gap: 6px; }
+  .ion-name { font-size: 14px; color: var(--text); font-weight: 600; margin-bottom: 2px; }
+  .pdk-hint { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+
+  input[type="number"] {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-family: 'Space Mono', monospace; font-size: 15px;
+    padding: 10px 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,0.12); }
+  input[type="number"].ok   { border-color: rgba(0,255,157,0.4); }
+  input[type="number"].warn { border-color: rgba(255,184,0,0.5); }
+  input[type="number"].bad  { border-color: rgba(255,68,85,0.5); }
+
+  .btn-analyze {
+    width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; border-radius: 12px; color: var(--bg); font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 800; letter-spacing: 1px; cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s; margin-top: 8px;
+  }
+  .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-reset {
+    width: 100%; padding: 12px; background: transparent; border: 1px solid var(--border);
+    border-radius: 12px; color: var(--muted); font-family: 'Syne', sans-serif;
+    font-size: 14px; cursor: pointer; transition: border-color 0.2s, color 0.2s; margin-top: 8px;
+  }
+  .btn-reset:hover { border-color: var(--muted); color: var(--text); }
+
+  #results { display: none; }
+  #results.show { display: block; animation: fadeUp 0.5s ease; }
+
+  .verdict { border-radius: 14px; padding: 24px 28px; margin-bottom: 20px; border: 1px solid; display: flex; align-items: center; gap: 20px; }
+  .verdict.good   { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.3); }
+  .verdict.ok-v   { background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.3); }
+  .verdict.bad-v  { background: rgba(255,184,0,0.08); border-color: rgba(255,184,0,0.3); }
+  .verdict.danger { background: rgba(255,68,85,0.08); border-color: rgba(255,68,85,0.3); }
+  .verdict-icon { font-size: 40px; flex-shrink: 0; }
+  .verdict-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .verdict-sub { color: var(--muted); font-size: 13px; font-family: 'Space Mono', monospace; }
+
+  .param-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); animation: fadeUp 0.4s ease both; }
+  .param-row:last-child { border-bottom: none; }
+  .param-status { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
+  .param-name { flex: 1; font-size: 14px; color: var(--text); }
+  .param-name small { display: block; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .param-value { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; }
+  .param-value.ok-c { color: var(--ok); } .param-value.warn-c { color: var(--warn); } .param-value.bad-c { color: var(--danger); }
+  .param-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-family: 'Space Mono', monospace; flex-shrink: 0; }
+  .param-badge.ok-b { background: rgba(0,255,157,0.15); color: var(--ok); }
+  .param-badge.warn-b { background: rgba(255,184,0,0.15); color: var(--warn); }
+  .param-badge.bad-b { background: rgba(255,68,85,0.15); color: var(--danger); }
+
+  .use-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+  .use-card { border-radius: 12px; padding: 14px 16px; border: 1px solid; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+  .use-card.yes   { background: rgba(0,255,157,0.06); border-color: rgba(0,255,157,0.25); color: var(--ok); }
+  .use-card.no    { background: rgba(255,68,85,0.06); border-color: rgba(255,68,85,0.2); color: var(--danger); }
+  .use-card.maybe { background: rgba(255,184,0,0.06); border-color: rgba(255,184,0,0.2); color: var(--warn); }
+  .use-icon { font-size: 22px; flex-shrink: 0; }
+
+  footer { text-align: center; margin-top: 48px; color: var(--muted); font-size: 12px; font-family: 'Space Mono', monospace; line-height: 1.8; }
+
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp   { from { opacity:0; transform:translateY(16px); }  to { opacity:1; transform:translateY(0); } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('az')">AZ</button>
+    <button class="lang-btn" onclick="setLang('ru')">RU</button>
+  </div>
+
+  <header>
+    <div class="header-badge" id="t-badge">💧 Digital Environmental Tool</div>
+    <h1>AquaMetric</h1>
+    <div class="wave"></div>
+    <p id="t-subtitle">Digital Water Analyser · Based on WHO &amp; EU Standards</p>
+  </header>
+
+  <div class="card">
+    <div class="card-title" id="t-card-title">🧪 Ions &amp; Physical Parameters</div>
+    <div class="grid">
+      <div class="input-group"><div class="ion-name" id="l-CO3">Carbonates CO₃²⁻</div><div class="pdk-hint" id="h-CO3">MPC ≤ 300 mg/L</div><input type="number" id="CO3" placeholder="mg/L" min="0" step="0.01"></div>
+      <div class="input-group"><div class="ion-name" id="l-HCO3">Bicarbonates HCO₃⁻</div><div class="pdk-hint" id="h-HCO3">MPC ≤ 400 mg/L</div><input type="number" id="HCO3" placeholder="mg/L" min="0" step="0.01"></div>
+      <div class="input-group"><div class="ion-name" id="l-PO4">Phosphates PO₄³⁻</div><div class="pdk-hint" id="h-PO4">MPC ≤ 3.5 mg/L</div><input type="number" id="PO4" placeholder="mg/L" min="0" step="0.01"></div>
+      <div class="input-group"><div class="ion-name" id="l-SO4">Sulphates SO₄²⁻</div><div class="pdk-hint" id="h-SO4">MPC ≤ 500 mg/L</div><input type="number" id="SO4" placeholder="mg/L" min="0" step="0.01"></div>
+      <div class="input-group"><div class="ion-name" id="l-Cl">Chlorides Cl⁻</div><div class="pdk-hint" id="h-Cl">MPC ≤ 350 mg/L</div><input type="number" id="Cl" placeholder="mg/L" min="0" step="0.01"></div>
+      <div class="input-group"><div class="ion-name" id="l-NH4">Ammonium NH₄⁺</div><div class="pdk-hint" id="h-NH4">MPC ≤ 0.5 mg/L</div><input type="number" id="NH4" placeholder="mg/L" min="0" step="0.001"></div>
+      <div class="input-group"><div class="ion-name" id="l-NO3">Nitrates NO₃⁻</div><div class="pdk-hint" id="h-NO3">MPC ≤ 45 mg/L</div><input type="number" id="NO3" placeholder="mg/L" min="0" step="0.01"></div>
+      <div class="input-group"><div class="ion-name" id="l-NO2">Nitrites NO₂⁻</div><div class="pdk-hint" id="h-NO2">MPC ≤ 3.3 mg/L</div><input type="number" id="NO2" placeholder="mg/L" min="0" step="0.001"></div>
+      <div class="input-group"><div class="ion-name" id="l-hardness">Total Hardness</div><div class="pdk-hint" id="h-hardness">MPC ≤ 7.0 meq/L</div><input type="number" id="hardness" placeholder="meq/L" min="0" step="0.1"></div>
+      <div class="input-group"><div class="ion-name" id="l-DO">Dissolved O₂</div><div class="pdk-hint" id="h-DO">MPC ≥ 4.0 mg/L</div><input type="number" id="DO" placeholder="mg/L" min="0" step="0.1"></div>
+      <div class="input-group"><div class="ion-name" id="l-pH">pH Level</div><div class="pdk-hint" id="h-pH">Range: 6.5 – 8.5</div><input type="number" id="pH" placeholder="pH" min="0" max="14" step="0.01"></div>
+    </div>
+    <button class="btn-analyze" id="t-btn-analyze" onclick="analyze()">⚗️ ANALYSE WATER SAMPLE</button>
+    <button class="btn-reset" id="t-btn-reset" onclick="resetForm()">Clear form</button>
+  </div>
+
+  <div id="results">
+    <div id="verdict-banner" class="verdict"></div>
+    <div class="card">
+      <div class="card-title" id="t-results-title">📊 Detailed Results</div>
+      <div id="param-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title" id="t-usage-title">🔍 Water Suitability</div>
+      <div class="use-grid" id="use-grid"></div>
+    </div>
+  </div>
+
+  <footer>AquaMetric — Digital Water Analyser<br>Standards: WHO Drinking Water Guidelines · EU Directive 2020/2184</footer>
+</div>
+
+<script>
+const T = {
+  en: {
+    badge:'💧 Digital Environmental Tool',
+    subtitle:'Digital Water Analyser · Based on WHO & EU Standards',
+    cardTitle:'🧪 Ions & Physical Parameters',
+    btnAnalyze:'⚗️ ANALYSE WATER SAMPLE',
+    btnReset:'Clear form',
+    resultsTitle:'📊 Detailed Results',
+    usageTitle:'🔍 Water Suitability',
+    alertFill:'Please fill in all fields!',
+    mpcLabel:'MPC',
+    verdicts:{
+      good:  ['EXCELLENT QUALITY','All parameters within MPC limits'],
+      okv:   ['SATISFACTORY',     w=>`${w} parameter(s) near limit — monitoring required`],
+      badv:  ['UNSATISFACTORY',   e=>`${e} MPC exceedance(s) — requires attention`],
+      danger:['POOR QUALITY',     e=>`${e} MPC exceedances — water requires treatment`],
+    },
+    sl:{ ok:'normal', warn:'near limit', bad:'exceeded' },
+    ll:{ ph:'range: 6.5–8.5', min:(l,u)=>`MPC ≥ ${l} ${u}`, max:(l,u)=>`MPC ≤ ${l} ${u}` },
+    uses:[{icon:'🚰',l:'Drinking Water'},{icon:'🌾',l:'Agricultural Irrigation'},{icon:'🏭',l:'Industrial Use'},{icon:'🐟',l:'Fishery'},{icon:'⚠️',l:'Eutrophication Risk'}],
+    useStatus:{ yes:'✅ Suitable', no:'❌ Not suitable', maybe:'⚠️ With restrictions' },
+    ions:{ CO3:'Carbonates',HCO3:'Bicarbonates',PO4:'Phosphates',SO4:'Sulphates',Cl:'Chlorides',NH4:'Ammonium',NO3:'Nitrates',NO2:'Nitrites',hardness:'Total Hardness',DO:'Dissolved O₂',pH:'pH Level' },
+    units:{ mg:'mg/L', meq:'meq/L', none:'' },
+    hints:{ CO3:'MPC ≤ 300 mg/L',HCO3:'MPC ≤ 400 mg/L',PO4:'MPC ≤ 3.5 mg/L',SO4:'MPC ≤ 500 mg/L',Cl:'MPC ≤ 350 mg/L',NH4:'MPC ≤ 0.5 mg/L',NO3:'MPC ≤ 45 mg/L',NO2:'MPC ≤ 3.3 mg/L',hardness:'MPC ≤ 7.0 meq/L',DO:'MPC ≥ 4.0 mg/L',pH:'Range: 6.5 – 8.5' },
+  },
+  az: {
+    badge:'💧 Rəqəmsal Ekoloji Alət',
+    subtitle:'Rəqəmsal Su Analiz Sistemi · ÜST və AB Standartlarına əsasən',
+    cardTitle:'🧪 İonlar və Fiziki Göstəricilər',
+    btnAnalyze:'⚗️ SU NÜMUNƏSİNİ ANALİZ ET',
+    btnReset:'Formu təmizlə',
+    resultsTitle:'📊 Ətraflı Nəticələr',
+    usageTitle:'🔍 Suyun Yararlılığı',
+    alertFill:'Zəhmət olmasa bütün xanaları doldurun!',
+    mpcLabel:'İYH',
+    verdicts:{
+      good:  ['ƏLA KEYFİYYƏT',      'Bütün göstəricilər norma həddindədir'],
+      okv:   ['QANAATBƏXŞ',          w=>`${w} göstərici həddə yaxındır — monitorinq tələb olunur`],
+      badv:  ['QANAATBƏXŞ DEYİL',   e=>`${e} İYH aşımı — diqqət tələb olunur`],
+      danger:['ZƏYF KEYFİYYƏT',     e=>`${e} İYH aşımı — su təmizlənməsini tələb edir`],
+    },
+    sl:{ ok:'norma', warn:'həddə yaxın', bad:'aşılmış' },
+    ll:{ ph:'norma: 6.5–8.5', min:(l,u)=>`İYH ≥ ${l} ${u}`, max:(l,u)=>`İYH ≤ ${l} ${u}` },
+    uses:[{icon:'🚰',l:'İçməli Su'},{icon:'🌾',l:'Kənd Təsərrüfatı Suvarması'},{icon:'🏭',l:'Texniki İstifadə'},{icon:'🐟',l:'Balıqçılıq'},{icon:'⚠️',l:'Evtrofikasiya Riski'}],
+    useStatus:{ yes:'✅ Yararlıdır', no:'❌ Yararlı deyil', maybe:'⚠️ Məhdudiyyətlərlə' },
+    ions:{ CO3:'Karbonatlar',HCO3:'Bikarbonatlar',PO4:'Fosfatlar',SO4:'Sulfatlar',Cl:'Xloridlər',NH4:'Ammonium',NO3:'Nitratlar',NO2:'Nitritlər',hardness:'Ümumi Sərtlik',DO:'Həll olmuş O₂',pH:'pH Səviyyəsi' },
+    units:{ mg:'mq/L', meq:'meq/L', none:'' },
+    hints:{ CO3:'İYH ≤ 300 mq/L',HCO3:'İYH ≤ 400 mq/L',PO4:'İYH ≤ 3.5 mq/L',SO4:'İYH ≤ 500 mq/L',Cl:'İYH ≤ 350 mq/L',NH4:'İYH ≤ 0.5 mq/L',NO3:'İYH ≤ 45 mq/L',NO2:'İYH ≤ 3.3 mq/L',hardness:'İYH ≤ 7.0 meq/L',DO:'İYH ≥ 4.0 mq/L',pH:'Norma: 6.5 – 8.5' },
+  },
+  ru: {
+    badge:'💧 Цифровой Экологический Инструмент',
+    subtitle:'Цифровой Анализатор Воды · Стандарты ВОЗ и ЕС',
+    cardTitle:'🧪 Ионы и Физические Показатели',
+    btnAnalyze:'⚗️ АНАЛИЗИРОВАТЬ ПРОБУ',
+    btnReset:'Очистить форму',
+    resultsTitle:'📊 Детальные Результаты',
+    usageTitle:'🔍 Пригодность Воды',
+    alertFill:'Пожалуйста, заполните все поля!',
+    mpcLabel:'ПДК',
+    verdicts:{
+      good:  ['ОТЛИЧНОЕ КАЧЕСТВО',       'Все показатели в пределах ПДК'],
+      okv:   ['УДОВЛЕТВОРИТЕЛЬНОЕ',       w=>`${w} показатель(я) близко к пределу — мониторинг необходим`],
+      badv:  ['НЕУДОВЛЕТВОРИТЕЛЬНОЕ',     e=>`${e} превышение(й) ПДК — требует внимания`],
+      danger:['ПЛОХОЕ КАЧЕСТВО',          e=>`${e} превышений ПДК — вода требует очистки`],
+    },
+    sl:{ ok:'норма', warn:'близко', bad:'превышение' },
+    ll:{ ph:'норма: 6.5–8.5', min:(l,u)=>`ПДК ≥ ${l} ${u}`, max:(l,u)=>`ПДК ≤ ${l} ${u}` },
+    uses:[{icon:'🚰',l:'Питьевая вода'},{icon:'🌾',l:'Орошение полей'},{icon:'🏭',l:'Технические нужды'},{icon:'🐟',l:'Рыбное хозяйство'},{icon:'⚠️',l:'Риск эвтрофикации'}],
+    useStatus:{ yes:'✅ Пригодна', no:'❌ Не пригодна', maybe:'⚠️ С ограничениями' },
+    ions:{ CO3:'Карбонаты',HCO3:'Гидрокарбонаты',PO4:'Фосфаты',SO4:'Сульфаты',Cl:'Хлориды',NH4:'Аммоний',NO3:'Нитраты',NO2:'Нитриты',hardness:'Общая жёсткость',DO:'Растворённый O₂',pH:'pH' },
+    units:{ mg:'мг/л', meq:'мг-экв/л', none:'' },
+    hints:{ CO3:'ПДК ≤ 300 мг/л',HCO3:'ПДК ≤ 400 мг/л',PO4:'ПДК ≤ 3.5 мг/л',SO4:'ПДК ≤ 500 мг/л',Cl:'ПДК ≤ 350 мг/л',NH4:'ПДК ≤ 0.5 мг/л',NO3:'ПДК ≤ 45 мг/л',NO2:'ПДК ≤ 3.3 мг/л',hardness:'ПДК ≤ 7.0 мг-экв/л',DO:'ПДК ≥ 4.0 мг/л',pH:'норма: 6.5 – 8.5' },
+  }
+};
+
+const PDK = {
+  CO3:     {limit:300,  uk:'mg',  formula:'CO₃²⁻', type:'max'},
+  HCO3:    {limit:400,  uk:'mg',  formula:'HCO₃⁻', type:'max'},
+  PO4:     {limit:3.5,  uk:'mg',  formula:'PO₄³⁻', type:'max'},
+  SO4:     {limit:500,  uk:'mg',  formula:'SO₄²⁻', type:'max'},
+  Cl:      {limit:350,  uk:'mg',  formula:'Cl⁻',    type:'max'},
+  NH4:     {limit:0.5,  uk:'mg',  formula:'NH₄⁺',  type:'max'},
+  NO3:     {limit:45,   uk:'mg',  formula:'NO₃⁻',  type:'max'},
+  NO2:     {limit:3.3,  uk:'mg',  formula:'NO₂⁻',  type:'max'},
+  hardness:{limit:7.0,  uk:'meq', formula:'',       type:'max'},
+  DO:      {limit:4.0,  uk:'mg',  formula:'O₂',     type:'min'},
+  pH:      {limit:null, uk:'none',formula:'pH',     type:'ph' },
+};
+
+let lang = 'en';
+let lastData = null, lastStatuses = null;
+
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('active');
+  applyLang();
+  if (lastData) renderResults(lastData, lastStatuses);
+}
+
+function applyLang() {
+  const t = T[lang];
+  document.getElementById('t-badge').textContent = t.badge;
+  document.getElementById('t-subtitle').textContent = t.subtitle;
+  document.getElementById('t-card-title').textContent = t.cardTitle;
+  document.getElementById('t-btn-analyze').textContent = t.btnAnalyze;
+  document.getElementById('t-btn-reset').textContent = t.btnReset;
+  document.getElementById('t-results-title').textContent = t.resultsTitle;
+  document.getElementById('t-usage-title').textContent = t.usageTitle;
+  for (const key of Object.keys(PDK)) {
+    const ln = document.getElementById('l-'+key);
+    const hn = document.getElementById('h-'+key);
+    if (ln) ln.textContent = `${t.ions[key]} ${PDK[key].formula}`;
+    if (hn) hn.textContent = t.hints[key];
+  }
+}
+
+function checkParam(key, val) {
+  const p = PDK[key];
+  if (p.type==='ph')  return (val>=6.5 && val<=8.5) ? 'ok' : 'bad';
+  if (p.type==='min') return val>=p.limit ? 'ok' : 'bad';
+  if (val>p.limit) return 'bad';
+  if (val>=p.limit*0.85) return 'warn';
+  return 'ok';
+}
+
+function analyze() {
+  const t = T[lang];
+  const data = {};
+  let ok = true;
+  for (const key of Object.keys(PDK)) {
+    const el = document.getElementById(key);
+    const v = parseFloat(el.value);
+    if (isNaN(v)||v<0) { el.style.borderColor='rgba(255,68,85,0.6)'; ok=false; }
+    else { data[key]=v; el.style.borderColor=''; }
+  }
+  if (!ok) { alert(t.alertFill); return; }
+  const statuses = {};
+  for (const key of Object.keys(PDK)) {
+    statuses[key] = checkParam(key, data[key]);
+    document.getElementById(key).className = statuses[key];
+  }
+  lastData=data; lastStatuses=statuses;
+  renderResults(data, statuses);
+}
+
+function renderResults(data, statuses) {
+  const t = T[lang];
+  const exceeded = Object.values(statuses).filter(s=>s==='bad').length;
+  const warning  = Object.values(statuses).filter(s=>s==='warn').length;
+
+  // Verdict
+  const banner = document.getElementById('verdict-banner');
+  let vClass, vIcon, vTitle, vSub;
+  if      (exceeded===0&&warning===0) { vClass='good';   vIcon='💧'; vTitle=t.verdicts.good[0];   vSub=t.verdicts.good[1]; }
+  else if (exceeded===0)              { vClass='ok-v';   vIcon='🔵'; vTitle=t.verdicts.okv[0];    vSub=t.verdicts.okv[1](warning); }
+  else if (exceeded<=2)               { vClass='bad-v';  vIcon='🟡'; vTitle=t.verdicts.badv[0];   vSub=t.verdicts.badv[1](exceeded); }
+  else                                { vClass='danger'; vIcon='🔴'; vTitle=t.verdicts.danger[0]; vSub=t.verdicts.danger[1](exceeded); }
+  banner.className=`verdict ${vClass}`;
+  banner.innerHTML=`<div class="verdict-icon">${vIcon}</div><div><div class="verdict-title">${vTitle}</div><div class="verdict-sub">${vSub}</div></div>`;
+
+  // Params
+  const list = document.getElementById('param-list');
+  list.innerHTML='';
+  let delay=0;
+  for (const key of Object.keys(PDK)) {
+    const p=PDK[key], val=data[key], st=statuses[key];
+    const unit=t.units[p.uk];
+    const icon=st==='ok'?'✅':st==='warn'?'⚠️':'❌';
+    const cls=st==='ok'?'ok-c':st==='warn'?'warn-c':'bad-c';
+    const bc=st==='ok'?'ok-b':st==='warn'?'warn-b':'bad-b';
+    let lim = p.type==='ph' ? t.ll.ph : p.type==='min' ? t.ll.min(p.limit,unit) : t.ll.max(p.limit,unit);
+    const row=document.createElement('div');
+    row.className='param-row'; row.style.animationDelay=`${delay}s`;
+    row.innerHTML=`<div class="param-status">${icon}</div><div class="param-name">${t.ions[key]} ${p.formula?`<b>${p.formula}</b>`:''}<small>${lim}</small></div><div class="param-value ${cls}">${val} ${unit}</div><span class="param-badge ${bc}">${t.sl[st]}</span>`;
+    list.appendChild(row); delay+=0.05;
+  }
+
+  // Usage
+  const ek=Object.keys(statuses).filter(k=>statuses[k]==='bad');
+  const us=[
+    ek.length===0?'yes':ek.some(k=>['SO4','CO3','HCO3','hardness','NH4','NO3','NO2','Cl','DO','pH'].includes(k))?'no':'maybe',
+    ek.some(k=>['NH4','NO3','NO2'].includes(k))?'no':ek.length>0?'maybe':'yes',
+    ek.some(k=>['NH4','NO2'].includes(k))?'maybe':'yes',
+    ek.some(k=>['NH4','NO2','DO'].includes(k))?'no':'yes',
+    (statuses['PO4']==='warn'||statuses['PO4']==='bad'||statuses['NO3']==='bad')?'no':'yes',
+  ];
+  const useGrid=document.getElementById('use-grid');
+  useGrid.innerHTML='';
+  t.uses.forEach((u,i)=>{
+    const s=us[i], div=document.createElement('div');
+    div.className=`use-card ${s}`;
+    div.innerHTML=`<span class="use-icon">${u.icon}</span><div><b>${u.l}</b><br><small>${t.useStatus[s]}</small></div>`;
+    useGrid.appendChild(div);
+  });
+
+  document.getElementById('results').classList.add('show');
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function resetForm() {
+  for (const key of Object.keys(PDK)) {
+    const el=document.getElementById(key);
+    el.value=''; el.className=''; el.style.borderColor='';
+  }
+  lastData=null; lastStatuses=null;
+  document.getElementById('results').classList.remove('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+applyLang();
+</script>
+</body>
+</html>
