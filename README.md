@@ -1,17 +1,14 @@
-[README.md](https://github.com/user-attachments/files/27099660/README.md)
 # 💧 AquaMetric — Digital Water Quality Analyser
 
 A web-based tool for analysing water quality by comparing ion concentrations against WHO and EU drinking water standards.
 
-🌐 **Live Demo:** [whisper278.github.io/AquaMetric/index.html](https://whisper278.github.io/AquaMetric/index.html)
+🌐 **Live Demo:** [whisper278.github.io/AquaMetric/AquaMetric%20(1).html](https://whisper278.github.io/AquaMetric/index.html)
 
 ---
 
 ## About
 
 AquaMetric is a universal water quality analysis tool that can be used for **any water body** — lakes, rivers, reservoirs, groundwater, or tap water. Simply enter your laboratory results and receive an instant assessment.
-
-The tool was originally inspired by real field research conducted at **Lake Dighyah** on the Absheron Peninsula in Azerbaijan — one of the first hydrochemical studies of this water body. However, the application is designed to work with water samples from anywhere in the world.
 
 The application allows researchers, environmentalists, and students to input water sample data and instantly receive a quality assessment with practical recommendations for water use.
 
@@ -46,15 +43,18 @@ The application allows researchers, environmentalists, and students to input wat
 
 ---
 
-## Research Background
+## Motivation
 
-The project is based on a scientific study of **Lake Dighyah** (Absheron Peninsula, Azerbaijan). Water samples were collected and analysed using:
+The idea for AquaMetric came from a real problem encountered during field research on **Lake Dighyah** (Absheron Peninsula, Azerbaijan) — a water body with almost no publicly available hydrochemical data. During the study, there was a clear lack of accessible tools to quickly evaluate water quality and communicate results in a meaningful way.
 
+That experience highlighted a broader issue: many water bodies around the world — especially in undermonitored regions — lack systematic environmental assessment. AquaMetric was built to help address this gap, making water quality analysis accessible to researchers, students, and environmentalists regardless of location.
+
+The Lake Dighyah study used the following methods:
 - Spectrophotometry
 - Titrimetric analysis
 - Multiline Water Quality Meter 850081
 
-Key findings from the study:
+Key findings that shaped the app's design:
 - **Sulphates** and **carbonates** exceeded MPC limits
 - **Total hardness** was significantly above the norm (11.8–13.4 meq/L vs. 7.0 meq/L limit)
 - **Nitrates, nitrites, and ammonium** were within acceptable ranges
@@ -76,7 +76,7 @@ Key findings from the study:
 3. Click **Analyse Water Sample**
 4. View detailed results and water suitability assessment
 
-Or download `AquaMetric.html` and open it locally in any browser.
+Or download `AquaMetric.html` and open it locally in any browser — no internet connection required.
 
 ---
 
@@ -87,4 +87,4 @@ Or download `AquaMetric.html` and open it locally in any browser.
 
 ---
 
-*Developed as part of an environmental research project on the hydrochemical state of Lake Dighyah, Absheron Peninsula, Azerbaijan.*
+*Built to make water quality assessment more accessible — inspired by field research on Lake Dighyah, Absheron Peninsula, Azerbaijan.*
