@@ -2,7 +2,7 @@
 
 A web-based tool for analysing water quality by comparing ion concentrations against WHO and EU drinking water standards.
 
-🌐 **Live Demo:** [whisper278.github.io/AquaMetric/AquaMetric%20(1).html](https://whisper278.github.io/AquaMetric/index.html)
+🌐 **Live Demo:** [whisper278.github.io/AquaMetric/index.html](https://whisper278.github.io/AquaMetric/index.html)
 
 ---
 
