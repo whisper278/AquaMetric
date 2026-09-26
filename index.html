@@ -1,140 +1,248 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+device-width, initial-scale=1.0">
 <title>AquaMetric — Digital Water Analyser</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a1628; --bg2: #0f2040; --card: #112244; --border: #1e3a6e;
-    --accent: #00d4ff; --accent2: #00ff9d; --warn: #ffb800;
-    --danger: #ff4455; --text: #e8f4ff; --muted: #7a9cc0; --ok: #00ff9d;
+    --bg:#0a1628;--bg2:#0f2040;--card:#112244;--border:#1e3a6e;
+    --accent:#00d4ff;--accent2:#00ff9d;--warn:#ffb800;
+    --danger:#ff4455;--text:#e8f4ff;--muted:#7a9cc0;--ok:#00ff9d;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; overflow-x: hidden; }
-  body::before {
-    content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(ellipse at 20% 50%, rgba(0,212,255,0.06) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(0,255,157,0.04) 0%, transparent 50%),
-                radial-gradient(ellipse at 60% 80%, rgba(0,100,200,0.08) 0%, transparent 50%);
-    pointer-events: none; z-index: 0;
-  }
-  .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+    background:radial-gradient(ellipse at 20% 50%,rgba(0,212,255,.06) 0%,transparent 60%),
+               radial-gradient(ellipse at 80% 20%,rgba(0,255,157,.04) 0%,transparent 50%),
+               radial-gradient(ellipse at 60% 80%,rgba(0,100,200,.08) 0%,transparent 50%);
+    pointer-events:none;z-index:0;}
+  .container{max-width:900px;margin:0 auto;padding:40px 20px;position:relative;z-index:1;}
 
-  .lang-bar { display: flex; justify-content: flex-end; gap: 6px; margin-bottom: 28px; animation: fadeDown 0.5s ease; }
-  .lang-btn {
-    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px;
-    padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border);
-    background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s;
-  }
-  .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .lang-btn.active { background: rgba(0,212,255,0.12); border-color: var(--accent); color: var(--accent); }
+  .lang-bar{display:flex;justify-content:flex-end;gap:6px;margin-bottom:28px;}
+  .lang-btn{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;}
+  .lang-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .lang-btn.active{background:rgba(0,212,255,.12);border-color:var(--accent);color:var(--accent);}
 
-  header { text-align: center; margin-bottom: 48px; animation: fadeDown 0.8s ease; }
-  .header-badge {
-    display: inline-block; font-family: 'Space Mono', monospace; font-size: 11px;
-    letter-spacing: 3px; color: var(--accent); border: 1px solid var(--accent);
-    padding: 4px 14px; border-radius: 20px; margin-bottom: 16px; text-transform: uppercase;
-  }
-  header h1 {
-    font-size: clamp(28px, 5vw, 48px); font-weight: 800; line-height: 1.1;
-    background: linear-gradient(135deg, #e8f4ff 0%, var(--accent) 50%, var(--accent2) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;
-  }
-  header p { color: var(--muted); font-size: 15px; font-family: 'Space Mono', monospace; }
-  .wave { width: 60px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); margin: 16px auto; border-radius: 2px; }
+  header{text-align:center;margin-bottom:48px;}
+  .header-badge{display:inline-block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--accent);border:1px solid var(--accent);padding:4px 14px;border-radius:20px;margin-bottom:16px;text-transform:uppercase;}
+  header h1{font-size:clamp(28px,5vw,48px);font-weight:800;line-height:1.1;background:linear-gradient(135deg,#e8f4ff 0%,var(--accent) 50%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+  header p{color:var(--muted);font-size:15px;font-family:'Space Mono',monospace;}
+  .wave{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));margin:16px auto;border-radius:2px;}
 
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 20px; animation: fadeUp 0.6s ease both; }
-  .card-title {
-    font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
-    font-family: 'Space Mono', monospace; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
-  }
-  .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;}
+  .card-title{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:'Space Mono',monospace;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+  .card-title::after{content:'';flex:1;height:1px;background:var(--border);}
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
-  .input-group { display: flex; flex-direction: column; gap: 6px; }
-  .ion-name { font-size: 14px; color: var(--text); font-weight: 600; margin-bottom: 2px; }
-  .pdk-hint { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+  .context-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+  .context-panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .context-panel h3{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'Space Mono',monospace;margin-bottom:12px;}
+  .context-panel .field-label{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:5px;}
+  .context-panel input,.context-panel select{background:#0a1628;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;padding:9px 10px;outline:none;width:100%;margin-bottom:10px;}
+  .context-panel input:focus,.context-panel select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.08);}
+  .profile-note{font-size:10px;line-height:1.6;color:var(--muted);font-family:'Space Mono',monospace;padding:8px 10px;border-left:2px solid var(--accent);background:rgba(0,212,255,.04);border-radius:0 6px 6px 0;}
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:14px;}
+  .summary-stat{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px;text-align:center;}
+  .summary-value{font-size:22px;font-weight:800;color:var(--accent);font-family:'Space Mono',monospace;}
+  .summary-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:5px;font-family:'Space Mono',monospace;}
+  .summary-meta{margin-top:12px;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7;}
+  .input-group{display:flex;flex-direction:column;gap:6px;}
+  .ion-name{font-size:14px;color:var(--text);font-weight:600;margin-bottom:2px;}
+  .pdk-hint{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;}
+  input[type="number"]{background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:15px;padding:10px 14px;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;-moz-appearance:textfield;}
+  input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;}
+  input[type="number"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.12);}
+  input[type="number"].ok{border-color:rgba(0,255,157,.4);}
+  input[type="number"].warn{border-color:rgba(255,184,0,.5);}
+  input[type="number"].bad{border-color:rgba(255,68,85,.5);}
 
-  input[type="number"] {
-    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-    color: var(--text); font-family: 'Space Mono', monospace; font-size: 15px;
-    padding: 10px 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%;
-    -moz-appearance: textfield;
-  }
-  input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
-  input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,0.12); }
-  input[type="number"].ok   { border-color: rgba(0,255,157,0.4); }
-  input[type="number"].warn { border-color: rgba(255,184,0,0.5); }
-  input[type="number"].bad  { border-color: rgba(255,68,85,0.5); }
+  .btn-analyze{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:var(--bg);font-family:'Syne',sans-serif;font-size:16px;font-weight:800;letter-spacing:1px;cursor:pointer;transition:opacity .2s,transform .15s;margin-top:8px;}
+  .btn-analyze:hover{opacity:.9;transform:translateY(-1px);}
+  .btn-reset{width:100%;padding:12px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--muted);font-family:'Syne',sans-serif;font-size:14px;cursor:pointer;transition:border-color .2s,color .2s;margin-top:8px;}
+  .btn-reset:hover{border-color:var(--muted);color:var(--text);}
 
-  .btn-analyze {
-    width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none; border-radius: 12px; color: var(--bg); font-family: 'Syne', sans-serif;
-    font-size: 16px; font-weight: 800; letter-spacing: 1px; cursor: pointer;
-    transition: opacity 0.2s, transform 0.15s; margin-top: 8px;
-  }
-  .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
-  .btn-reset {
-    width: 100%; padding: 12px; background: transparent; border: 1px solid var(--border);
-    border-radius: 12px; color: var(--muted); font-family: 'Syne', sans-serif;
-    font-size: 14px; cursor: pointer; transition: border-color 0.2s, color 0.2s; margin-top: 8px;
-  }
-  .btn-reset:hover { border-color: var(--muted); color: var(--text); }
+  #results{display:none;}
+  #results.show{display:block;}
 
-  #results { display: none; }
-  #results.show { display: block; animation: fadeUp 0.5s ease; }
+  .verdict{border-radius:14px;padding:24px 28px;margin-bottom:20px;border:1px solid;display:flex;align-items:center;gap:20px;}
+  .verdict.good{background:rgba(0,255,157,.08);border-color:rgba(0,255,157,.3);}
+  .verdict.ok-v{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.3);}
+  .verdict.bad-v{background:rgba(255,184,0,.08);border-color:rgba(255,184,0,.3);}
+  .verdict.danger{background:rgba(255,68,85,.08);border-color:rgba(255,68,85,.3);}
+  .verdict-icon{font-size:40px;flex-shrink:0;}
+  .verdict-title{font-size:20px;font-weight:800;margin-bottom:4px;}
+  .verdict-sub{color:var(--muted);font-size:13px;font-family:'Space Mono',monospace;}
 
-  .verdict { border-radius: 14px; padding: 24px 28px; margin-bottom: 20px; border: 1px solid; display: flex; align-items: center; gap: 20px; }
-  .verdict.good   { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.3); }
-  .verdict.ok-v   { background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.3); }
-  .verdict.bad-v  { background: rgba(255,184,0,0.08); border-color: rgba(255,184,0,0.3); }
-  .verdict.danger { background: rgba(255,68,85,0.08); border-color: rgba(255,68,85,0.3); }
-  .verdict-icon { font-size: 40px; flex-shrink: 0; }
-  .verdict-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
-  .verdict-sub { color: var(--muted); font-size: 13px; font-family: 'Space Mono', monospace; }
+  .param-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+  .param-row:last-child{border-bottom:none;}
+  .param-status{font-size:18px;flex-shrink:0;width:24px;text-align:center;}
+  .param-name{flex:1;font-size:14px;color:var(--text);}
+  .param-name small{display:block;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px;}
+  .param-value{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;}
+  .param-value.ok-c{color:var(--ok);}.param-value.warn-c{color:var(--warn);}.param-value.bad-c{color:var(--danger);}
+  .param-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-family:'Space Mono',monospace;flex-shrink:0;}
+  .param-badge.ok-b{background:rgba(0,255,157,.15);color:var(--ok);}
+  .param-badge.warn-b{background:rgba(255,184,0,.15);color:var(--warn);}
+  .param-badge.bad-b{background:rgba(255,68,85,.15);color:var(--danger);}
 
-  .param-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); animation: fadeUp 0.4s ease both; }
-  .param-row:last-child { border-bottom: none; }
-  .param-status { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
-  .param-name { flex: 1; font-size: 14px; color: var(--text); }
-  .param-name small { display: block; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .param-value { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; }
-  .param-value.ok-c { color: var(--ok); } .param-value.warn-c { color: var(--warn); } .param-value.bad-c { color: var(--danger); }
-  .param-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-family: 'Space Mono', monospace; flex-shrink: 0; }
-  .param-badge.ok-b { background: rgba(0,255,157,0.15); color: var(--ok); }
-  .param-badge.warn-b { background: rgba(255,184,0,0.15); color: var(--warn); }
-  .param-badge.bad-b { background: rgba(255,68,85,0.15); color: var(--danger); }
+  .use-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;}
+  .use-card{border-radius:12px;padding:14px 16px;border:1px solid;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;}
+  .use-card.yes{background:rgba(0,255,157,.06);border-color:rgba(0,255,157,.25);color:var(--ok);}
+  .use-card.no{background:rgba(255,68,85,.06);border-color:rgba(255,68,85,.2);color:var(--danger);}
+  .use-card.maybe{background:rgba(255,184,0,.06);border-color:rgba(255,184,0,.2);color:var(--warn);}
+  .use-icon{font-size:22px;flex-shrink:0;}
 
-  .use-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
-  .use-card { border-radius: 12px; padding: 14px 16px; border: 1px solid; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
-  .use-card.yes   { background: rgba(0,255,157,0.06); border-color: rgba(0,255,157,0.25); color: var(--ok); }
-  .use-card.no    { background: rgba(255,68,85,0.06); border-color: rgba(255,68,85,0.2); color: var(--danger); }
-  .use-card.maybe { background: rgba(255,184,0,0.06); border-color: rgba(255,184,0,0.2); color: var(--warn); }
-  .use-icon { font-size: 22px; flex-shrink: 0; }
+  /* ── ACCORDION REMEDIATION ── */
+  .rem-card{background:var(--card);border:1px solid rgba(255,184,0,.25);border-radius:16px;padding:28px;margin-bottom:20px;}
+  .rem-card .card-title{color:var(--warn);}
+  .rem-card .card-title::after{background:rgba(255,184,0,.2);}
 
-  footer { text-align: center; margin-top: 48px; color: var(--muted); font-size: 12px; font-family: 'Space Mono', monospace; line-height: 1.8; }
+  .acc-item{border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
+  .acc-item.open{border-color:rgba(255,68,85,.4);}
 
-  @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes fadeUp   { from { opacity:0; transform:translateY(16px); }  to { opacity:1; transform:translateY(0); } }
+  .acc-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;transition:background .2s;}
+  .acc-header:hover{background:rgba(255,255,255,.03);}
+  .acc-icon{font-size:16px;flex-shrink:0;}
+  .acc-name{flex:1;font-size:14px;font-weight:700;color:var(--danger);}
+  .acc-value{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);background:rgba(255,68,85,.1);padding:2px 10px;border-radius:6px;flex-shrink:0;}
+  .acc-arrow{font-size:12px;color:var(--muted);transition:transform .3s;flex-shrink:0;}
+  .acc-item.open .acc-arrow{transform:rotate(180deg);}
+
+  .acc-body{display:none;padding:0 18px 18px 18px;}
+  .acc-item.open .acc-body{display:block;}
+
+  /* tabs inside accordion */
+  .tab-bar{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+  .tab-btn{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.5px;padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;}
+  .tab-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .tab-btn.active{background:rgba(0,212,255,.12);border-color:var(--accent);color:var(--accent);}
+
+  .tab-pane{display:none;}
+  .tab-pane.active{display:block;}
+
+  /* tab content styles */
+  .cause-box{background:rgba(255,184,0,.05);border-left:3px solid var(--warn);border-radius:0 8px 8px 0;padding:12px 14px;font-size:13px;color:var(--text);line-height:1.7;margin-bottom:0;}
+
+  .method-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .method-tag{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);color:var(--accent);font-size:12px;font-family:'Space Mono',monospace;padding:3px 10px;border-radius:8px;}
+
+  .steps-list{list-style:none;padding:0;margin:0;}
+  .steps-list li{font-size:13px;color:var(--text);padding:8px 0 8px 22px;position:relative;line-height:1.7;border-bottom:1px solid rgba(30,58,110,.5);}
+  .steps-list li:last-child{border-bottom:none;}
+  .steps-list li::before{content:'→';position:absolute;left:0;color:var(--accent);font-family:'Space Mono',monospace;}
+
+  /* lab method styles */
+  .lab-section{margin-bottom:16px;}
+  .lab-section:last-child{margin-bottom:0;}
+  .lab-section-title{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent2);font-family:'Space Mono',monospace;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid rgba(0,255,157,.15);}
+  .lab-principle{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px;font-style:italic;}
+  .lab-steps{list-style:none;padding:0;margin:0;}
+  .lab-steps li{font-size:13px;color:var(--text);padding:6px 0 6px 28px;position:relative;line-height:1.6;border-bottom:1px solid rgba(30,58,110,.4);}
+  .lab-steps li:last-child{border-bottom:none;}
+  .lab-steps li::before{content:counter(step-counter);counter-increment:step-counter;position:absolute;left:0;top:7px;width:18px;height:18px;background:rgba(0,255,157,.15);color:var(--accent2);font-family:'Space Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;line-height:18px;}
+  .lab-steps{counter-reset:step-counter;}
+  .lab-reagents{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .lab-reagent{background:rgba(0,255,157,.07);border:1px solid rgba(0,255,157,.2);color:var(--accent2);font-size:11px;font-family:'Space Mono',monospace;padding:2px 9px;border-radius:6px;}
+  .lab-note{font-size:12px;color:var(--warn);background:rgba(255,184,0,.06);border-left:2px solid var(--warn);padding:8px 12px;border-radius:0 6px 6px 0;margin-top:8px;line-height:1.6;}
+
+  .rem-no-issues{text-align:center;padding:20px;color:var(--ok);font-family:'Space Mono',monospace;font-size:13px;}
+
+  /* ── TREATMENT SEQUENCE ── */
+  .seq-block{background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.2);border-radius:14px;padding:20px 24px;margin-bottom:20px;}
+  .seq-intro{font-size:13px;color:var(--muted);margin-bottom:16px;font-family:'Space Mono',monospace;line-height:1.6;}
+  .seq-steps{list-style:none;padding:0;margin:0;counter-reset:seq-counter;}
+  .seq-step{display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid rgba(0,212,255,.1);cursor:pointer;transition:background .15s;border-radius:6px;}
+  .seq-step:last-child{border-bottom:none;}
+  .seq-step:hover{background:rgba(0,212,255,.05);padding-left:6px;}
+  .seq-num{flex-shrink:0;width:26px;height:26px;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);color:var(--accent);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .seq-content{flex:1;}
+  .seq-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
+  .seq-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+  .seq-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;}
+  .seq-tag{font-size:11px;font-family:'Space Mono',monospace;padding:1px 7px;border-radius:5px;background:rgba(255,68,85,.1);border:1px solid rgba(255,68,85,.2);color:var(--danger);}
+  .seq-tag.opt{background:rgba(255,184,0,.08);border-color:rgba(255,184,0,.2);color:var(--warn);}
+  .seq-link{font-size:11px;color:var(--accent);font-family:'Space Mono',monospace;margin-top:4px;display:inline-block;}
+  .seq-link:hover{text-decoration:underline;}
+
+  /* ── CHART ── */
+  .chart-wrap{width:100%;overflow-x:auto;}
+  .chart-svg{display:block;width:100%;min-width:480px;}
+  .chart-bar-ok{fill:rgba(0,255,157,.7);}
+  .chart-bar-warn{fill:rgba(255,184,0,.75);}
+  .chart-bar-bad{fill:rgba(255,68,85,.8);}
+  .chart-bar-mpc{fill:none;stroke:rgba(255,255,255,.25);stroke-width:1;stroke-dasharray:4,3;}
+  .chart-label{font-family:'Space Mono',monospace;font-size:10px;fill:var(--muted);}
+  .chart-val{font-family:'Space Mono',monospace;font-size:9px;fill:var(--text);}
+  .chart-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;justify-content:center;}
+  .chart-legend-item{display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+  .chart-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+
+  /* ── ORGANOLEPTIC SELECTS ── */
+  .org-select{background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:10px 14px;outline:none;width:100%;cursor:pointer;transition:border-color .2s;}
+  .org-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.12);}
+  .org-select option{background:#0f2040;color:var(--text);}
+
+  /* ── HISTORY ── */
+  .hist-item{padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:border-color .2s;}
+  .hist-item:hover{border-color:var(--accent);}
+  .hist-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+  .hist-date{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+  .hist-verdict{font-size:12px;font-weight:700;}
+  .hist-params{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
+
+  /* ── PDF BUTTON ── */
+  .btn-pdf{width:100%;padding:13px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);border-radius:12px;color:var(--accent);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:8px;}
+  .btn-pdf:hover{background:rgba(0,212,255,.18);border-color:var(--accent);}
+
+  footer{text-align:center;margin-top:48px;color:var(--muted);font-size:12px;font-family:'Space Mono',monospace;line-height:1.8;}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 </style>
 </head>
 <body>
 <div class="container">
-
   <div class="lang-bar">
     <button class="lang-btn active" onclick="setLang('en')">EN</button>
     <button class="lang-btn" onclick="setLang('az')">AZ</button>
     <button class="lang-btn" onclick="setLang('ru')">RU</button>
   </div>
-
   <header>
     <div class="header-badge" id="t-badge">💧 Digital Environmental Tool</div>
     <h1>AquaMetric</h1>
     <div class="wave"></div>
     <p id="t-subtitle">Digital Water Analyser · Based on WHO &amp; EU Standards</p>
   </header>
+  <div class="card">
+    <div class="card-title" id="t-context-title">🗂️ Sample &amp; Assessment Context</div>
+    <div class="context-grid">
+      <div class="context-panel">
+        <h3 id="t-sample-panel">Sample Information</h3>
+        <div class="field-label" id="l-sample-id">Sample ID</div>
+        <input id="sample-id" type="text" placeholder="e.g. LD-001">
+        <div class="field-label" id="l-water-body">Water Body</div>
+        <input id="water-body" type="text" placeholder="e.g. Lake Digah">
+        <div class="field-label" id="l-location">Location</div>
+        <input id="sample-location" type="text" placeholder="e.g. Absheron">
+        <div class="field-label" id="l-date">Sampling Date</div>
+        <input id="sample-date" type="date">
+        <div class="field-label" id="l-depth">Sampling Depth</div>
+        <input id="sample-depth" type="text" placeholder="e.g. 0.5 m">
+        <div class="field-label" id="l-temperature">Water Temperature</div>
+        <input id="sample-temp" type="text" placeholder="e.g. 24 °C">
+      </div>
+      <div class="context-panel">
+        <h3 id="t-profile-panel">Assessment Profile</h3>
+        <div class="field-label" id="l-profile">Reference profile</div>
+        <select id="assessment-profile" onchange="updateProfileNote()">
+          <option value="drinking" id="profile-drinking">Drinking Water</option>
+          <option value="environmental" id="profile-environmental">Environmental / Surface Water Screening</option>
+          <option value="custom" id="profile-custom">Custom / Research</option>
+        </select>
+        <div class="profile-note" id="profile-note">Current AquaMetric reference limits are used. Environmental screening does not constitute a formal ecological classification.</div>
+        <div style="margin-top:18px;font-size:11px;color:var(--muted);line-height:1.7;">
+          <span id="profile-helper">Choose the context in which you are interpreting the measured values. The selected profile is saved with the analysis.</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="card">
     <div class="card-title" id="t-card-title">🧪 Ions &amp; Physical Parameters</div>
@@ -151,12 +259,80 @@
       <div class="input-group"><div class="ion-name" id="l-DO">Dissolved O₂</div><div class="pdk-hint" id="h-DO">MPC ≥ 4.0 mg/L</div><input type="number" id="DO" placeholder="mg/L" min="0" step="0.1"></div>
       <div class="input-group"><div class="ion-name" id="l-pH">pH Level</div><div class="pdk-hint" id="h-pH">Range: 6.5 – 8.5</div><input type="number" id="pH" placeholder="pH" min="0" max="14" step="0.01"></div>
     </div>
+    <div class="card-title" id="t-org-title" style="margin-top:20px;">👁️ Organoleptic Parameters <span style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;">(optional)</span></div>
+    <div class="grid">
+      <div class="input-group">
+        <div class="ion-name" id="l-colour">Colour</div>
+        <div class="pdk-hint" id="h-colour">MPC ≤ 20° (platinum-cobalt scale)</div>
+        <input type="number" id="colour" placeholder="degrees" min="0" step="1">
+      </div>
+      <div class="input-group">
+        <div class="ion-name" id="l-turbidity">Turbidity</div>
+        <div class="pdk-hint" id="h-turbidity">MPC ≤ 2.6 NTU</div>
+        <input type="number" id="turbidity" placeholder="NTU" min="0" step="0.1">
+      </div>
+      <div class="input-group">
+        <div class="ion-name" id="l-odour">Odour</div>
+        <div class="pdk-hint" id="h-odour">0–5 point scale (WHO)</div>
+        <select id="odour" class="org-select">
+          <option value="" id="opt-odour-none">— not assessed</option>
+          <option value="0" id="opt-odour-0">0 — No odour</option>
+          <option value="1" id="opt-odour-1">1 — Very faint</option>
+          <option value="2" id="opt-odour-2">2 — Faint (acceptable)</option>
+          <option value="3" id="opt-odour-3">3 — Noticeable ⚠️</option>
+          <option value="4" id="opt-odour-4">4 — Strong ❌</option>
+          <option value="5" id="opt-odour-5">5 — Very strong ❌</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <div class="ion-name" id="l-taste">Taste / Aftertaste</div>
+        <div class="pdk-hint" id="h-taste">0–5 point scale (WHO)</div>
+        <select id="taste" class="org-select">
+          <option value="" id="opt-taste-none">— not assessed</option>
+          <option value="0" id="opt-taste-0">0 — No taste</option>
+          <option value="1" id="opt-taste-1">1 — Very faint</option>
+          <option value="2" id="opt-taste-2">2 — Faint (acceptable)</option>
+          <option value="3" id="opt-taste-3">3 — Noticeable ⚠️</option>
+          <option value="4" id="opt-taste-4">4 — Strong ❌</option>
+          <option value="5" id="opt-taste-5">5 — Very strong ❌</option>
+        </select>
+      </div>
+    </div>
     <button class="btn-analyze" id="t-btn-analyze" onclick="analyze()">⚗️ ANALYSE WATER SAMPLE</button>
     <button class="btn-reset" id="t-btn-reset" onclick="resetForm()">Clear form</button>
   </div>
 
+  <!-- History -->
+  <div class="card" id="history-block" style="display:none;">
+    <div class="card-title" id="t-history-title">🗂️ Analysis History</div>
+    <div id="history-list"></div>
+    <button class="btn-reset" style="margin-top:10px;" onclick="clearHistory()" id="t-history-clear">🗑 Clear history</button>
+  </div>
+
   <div id="results">
     <div id="verdict-banner" class="verdict"></div>
+    <div class="card" id="assessment-summary-card">
+      <div class="card-title" id="t-summary-title">📋 Assessment Summary</div>
+      <div class="summary-grid">
+        <div class="summary-stat"><div class="summary-value" id="summary-measured">0 / 15</div><div class="summary-label" id="summary-measured-label">Parameters measured</div></div>
+        <div class="summary-stat"><div class="summary-value" id="summary-complete">0%</div><div class="summary-label" id="summary-complete-label">Data completeness</div></div>
+        <div class="summary-stat"><div class="summary-value" id="summary-exceeded">0</div><div class="summary-label" id="summary-exceeded-label">Exceeded</div></div>
+        <div class="summary-stat"><div class="summary-value" id="summary-warning">0</div><div class="summary-label" id="summary-warning-label">Near limit</div></div>
+      </div>
+      <div class="summary-meta" id="summary-meta">—</div>
+    </div>
+    <div class="card">
+      <div class="card-title" id="t-chart-title">📊 Parameter vs MPC Chart</div>
+      <div class="chart-wrap">
+        <svg id="chart-svg" class="chart-svg"></svg>
+      </div>
+      <div class="chart-legend">
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(0,255,157,.7)"></div><span id="leg-ok">Within limit</span></div>
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(255,184,0,.75)"></div><span id="leg-warn">Near limit</span></div>
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(255,68,85,.8)"></div><span id="leg-bad">Exceeded</span></div>
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(255,255,255,.25);border:1px dashed rgba(255,255,255,.4)"></div><span id="leg-mpc">MPC limit</span></div>
+      </div>
+    </div>
     <div class="card">
       <div class="card-title" id="t-results-title">📊 Detailed Results</div>
       <div id="param-list"></div>
@@ -165,223 +341,1592 @@
       <div class="card-title" id="t-usage-title">🔍 Water Suitability</div>
       <div class="use-grid" id="use-grid"></div>
     </div>
+    <div class="rem-card" id="seq-block" style="display:none;">
+      <div class="card-title" id="seq-title">🔢 Treatment Sequence</div>
+      <div class="seq-intro" id="seq-intro"></div>
+      <p id="seq-hint" style="font-size:11px;color:var(--accent);font-family:'Space Mono',monospace;margin-bottom:12px;"></p>
+      <ul class="seq-steps" id="seq-list"></ul>
+    </div>
+    <div class="rem-card" id="remediation-block">
+      <div class="card-title" id="t-rem-title">🔧 Treatment Recommendations</div>
+      <div id="remediation-content"></div>
+    </div>
+    <button class="btn-pdf" onclick="exportPDF()" id="t-btn-pdf">📄 Download PDF Report</button>
   </div>
 
   <footer>AquaMetric — Digital Water Analyser<br>Standards: WHO Drinking Water Guidelines · EU Directive 2020/2184</footer>
 </div>
-
 <script>
+// ─────────────────────────────────────────────────────────────────────────────
+// REMEDIATION DATA  (cause / treatment methods / lab detection method)
+// ─────────────────────────────────────────────────────────────────────────────
+const REM = {
+  en:{
+    title:'🔧 Treatment Recommendations',
+    noIssues:'✅ No treatment required — all parameters within safe limits.',
+    tabs:['⚠️ Cause','🔧 Treatment','🔬 Lab Method'],
+    params:{
+      SO4:{
+        name:'Sulphates SO₄²⁻',
+        cause:'High sulphate concentrations are typically caused by dissolution of gypsum (CaSO₄·2H₂O) and anhydrite (CaSO₄) minerals from surrounding rocks, industrial wastewater discharge (metallurgy, chemical plants, mining), atmospheric acid deposition (SO₂ from combustion converting to SO₄²⁻ in rain), or oxidation of pyrite (FeS₂) in soils and sediments.',
+        methods:['Reverse Osmosis','Ion Exchange','Nanofiltration','Electrodialysis','Barium Precipitation'],
+        steps:[
+          'Reverse osmosis (RO): pass water through semi-permeable membranes at 5–15 bar pressure — removes up to 99% of sulphates. Most effective for drinking water production.',
+          'Ion exchange: load water onto strong-base anion resin (e.g. Amberlite IRA-400, Dowex 1). SO₄²⁻ is exchanged for Cl⁻ or OH⁻. Regenerate with 4–8% NaCl or 1M NaOH. Capacity ~20–40 g SO₄²⁻/L resin.',
+          'Nanofiltration (NF): membranes with MWCO 200–400 Da effectively remove divalent ions. Operating pressure 4–8 bar. 80–95% sulphate rejection. Lower energy than RO.',
+          'Electrodialysis reversal (EDR): apply DC electric field across ion-selective membranes — SO₄²⁻ migrates toward anode. Suitable for brackish water (SO₄²⁻ 500–5000 mg/L).',
+          'Barium precipitation: add BaCl₂ → BaSO₄ precipitates (Ksp = 1.1×10⁻¹⁰). Use stoichiometric dose: 2.09 mg BaCl₂ per mg SO₄²⁻. Filter precipitate. Note: excess Ba²⁺ is toxic — verify by precipitation test.',
+          'For natural water bodies: audit industrial discharges in the catchment; address pyrite oxidation in eroded stream banks.',
+        ],
+        lab:{
+          method:'Turbidimetric Method (Standard Method 4500-SO₄²⁻ E) / Gravimetric (BaSO₄)',
+          principle:'Sulphate ions are precipitated by barium chloride (BaCl₂) in an acidic medium to form barium sulphate (BaSO₄). Turbidimetry measures the light scatter of the suspension; gravimetry weighs the dried precipitate.',
+          steps:[
+            'Prepare 100 mL of filtered water sample. Acidify to pH 4.0–4.5 with HCl.',
+            'Add 20 mL of conditioning reagent (glycerol + HCl + ethanol + NaCl solution — this stabilises the BaSO₄ suspension).',
+            'While stirring, add exactly 0.3 g of BaCl₂·2H₂O crystals. Stir precisely 60 seconds.',
+            'Transfer immediately to cuvette. Measure absorbance at 420 nm within 3–5 minutes.',
+            'Prepare calibration standards: 0, 5, 10, 20, 40, 80 mg/L SO₄²⁻ in sulphate-free matrix.',
+            'Calculate concentration from calibration curve. Range: 1–40 mg/L (turbidimetric); extend to 500 mg/L by dilution.',
+            'Gravimetric alternative: filter through pre-weighed glass-fibre filter, dry at 105°C for 2h, cool in desiccator, weigh. mg SO₄²⁻/L = (filter mass gain × 1000) / sample volume mL.',
+          ],
+          reagents:['BaCl₂·2H₂O','HCl (1:1)','Conditioning reagent (glycerol, ethanol, NaCl)','Sulphate standard (K₂SO₄ 1000 mg/L)'],
+          note:'Ion chromatography (IC) is the most precise method — separates SO₄²⁻ from other anions on an anion exchange column. Detection limit ~0.1 mg/L.',
+        }
+      },
+      CO3:{
+        name:'Carbonates CO₃²⁻',
+        cause:'Elevated carbonates indicate strongly alkaline conditions (pH > 8.3). Sources include dissolution of calcite (CaCO₃) and dolomite under high-pH conditions, geothermal water inputs, industrial alkaline effluents (cement, paper mills), and photosynthesis by algae consuming CO₂ which shifts the carbonate equilibrium toward CO₃²⁻.',
+        methods:['CO₂ Acidification','Lime-Soda Softening','Cation Exchange','Acid Dosing'],
+        steps:[
+          'CO₂ acidification: inject CO₂ gas at 0.5–2 kg/m³ to convert CO₃²⁻ → HCO₃⁻ → H₂CO₃. Lowers pH to target range 7.0–8.0. No chemical residue, precise pH control.',
+          'Lime-soda softening: add Ca(OH)₂ slurry to precipitate CaCO₃ (2Ca²⁺ + 2CO₃²⁻ → 2CaCO₃↓). Settle or filter the precipitate. Effective when combined with hardness removal.',
+          'H⁺ cation exchange resin: passes Ca²⁺/Mg²⁺ associated with CO₃²⁻ through strong acid cation (SAC) resin in H⁺ form — reduces alkalinity and softens simultaneously. Regenerate with H₂SO₄.',
+          'Dilute acid dosing (for industrial/municipal): add H₂SO₄ or HCl to reduce pH to 8.3 — converts CO₃²⁻ completely to HCO₃⁻. Then aerate to strip CO₂ if further reduction needed.',
+          'For lake water: reducing algal blooms (phosphate control) prevents photosynthetic carbonate accumulation.',
+        ],
+        lab:{
+          method:'Potentiometric Titration (SM 2320 B) — pH endpoint method',
+          principle:'Carbonate alkalinity is determined by titrating with standard acid (H₂SO₄ or HCl) to pH 8.3 endpoint (CO₃²⁻ → HCO₃⁻), then to pH 4.5 endpoint (HCO₃⁻ → H₂CO₃). Phenolphthalein indicator changes colour at pH 8.3; bromocresol green–methyl red at pH 4.5.',
+          steps:[
+            'Take 100 mL of unfiltered sample into a 250 mL Erlenmeyer flask. Avoid agitation (prevents CO₂ loss).',
+            'Add 3 drops of phenolphthalein indicator. If pink → carbonate is present.',
+            'Titrate with 0.02N H₂SO₄ until colour disappears (pH 8.3). Record volume V₁ (mL).',
+            'Add 3 drops bromocresol green–methyl red indicator.',
+            'Continue titration to pH 4.5 (grey-green → pink-red transition). Record total volume V₂ (mL).',
+            'CO₃²⁻ (mg/L) = V₁ × N_acid × 60,000 / V_sample (mL). Bicarbonate = (V₂ − 2V₁) × N × 61,000 / V_sample.',
+            'Use pH meter for precision titration — visual indicators have ±0.3 pH unit uncertainty.',
+          ],
+          reagents:['0.02N H₂SO₄ (standardised vs Na₂CO₃)','Phenolphthalein indicator (1% in 60% ethanol)','Bromocresol green–methyl red mixed indicator','CO₂-free distilled water for blanks'],
+          note:'Samples must be analysed within 24 h. Do not filter before titration. Store at 4°C if delayed.',
+        }
+      },
+      HCO3:{
+        name:'Bicarbonates HCO₃⁻',
+        cause:'Bicarbonates are the dominant alkalinity species in most natural waters. High concentrations arise from CO₂ dissolving in water (CO₂ + H₂O → H₂CO₃ → H⁺ + HCO₃⁻), weathering of carbonate minerals, long groundwater residence times in limestone aquifers, and organic matter decomposition releasing CO₂. High HCO₃⁻ causes scaling (CaCO₃ precipitation in pipes) and affects irrigation soil chemistry.',
+        methods:['Aeration','Lime Softening','Acid Neutralisation','Reverse Osmosis'],
+        steps:[
+          'Aeration (for moderate levels): spray water through packed towers or cascade aerators. CO₂ escapes, equilibrium shifts: HCO₃⁻ + H⁺ → H₂CO₃ → CO₂↑ + H₂O. Reduces HCO₃⁻ by 20–40%. Low cost, no chemicals.',
+          'Lime softening: add Ca(OH)₂ at stoichiometric dose (1 meq Ca(OH)₂ per meq HCO₃⁻): Ca(OH)₂ + 2HCO₃⁻ → CaCO₃↓ + CO₃²⁻ + 2H₂O. Settle and filter CaCO₃. Effective for hardness + bicarbonate combined.',
+          'Acid neutralisation: add H₂SO₄ or HCl to pH 4.3 — converts all HCO₃⁻ to H₂CO₃. Then aerate to strip CO₂. Use for full alkalinity removal before ion exchange or RO.',
+          'Reverse osmosis: removes 95–98% of bicarbonates. Required for high-purity water production.',
+          'For irrigation water (HCO₃⁻ > 400 mg/L): blend with lower-alkalinity source, or inject sulfuric acid into irrigation lines (fertigation acid injection system).',
+        ],
+        lab:{
+          method:'Potentiometric Titration to pH 4.5 (Standard Method 2320 B)',
+          principle:'Bicarbonate alkalinity is titrated with standardised sulphuric acid to the pH 4.5 endpoint, where all HCO₃⁻ is converted to H₂CO₃ (CO₂ + H₂O). The volume of acid used corresponds directly to HCO₃⁻ concentration. If carbonate endpoint (pH 8.3) shows zero, total alkalinity = bicarbonate alkalinity.',
+          steps:[
+            'Collect 200 mL sample without exposure to air. Analyse immediately or within 6 hours.',
+            'Pour 100 mL into a beaker. Insert calibrated pH electrode.',
+            'Titrate with 0.02N H₂SO₄ from a microburette. Add acid dropwise as pH approaches 4.5.',
+            'Record volume V (mL) of acid used to reach pH 4.5 exactly.',
+            'HCO₃⁻ (mg/L) = V × N × 61,000 / V_sample.',
+            'Verification: boil a separate 100 mL sample 5 min to expel CO₂, cool, titrate again — difference = free CO₂ contribution.',
+          ],
+          reagents:['0.02N H₂SO₄ (verified with Na₂CO₃ primary standard)','pH meter with temperature compensation','Magnetic stirrer (avoid CO₂ loss from vigorous stirring)'],
+          note:'Never use field-collected samples that sat open > 6 h — CO₂ exchange with atmosphere falsifies results. Preserve at 4°C, analyse same day.',
+        }
+      },
+      hardness:{
+        name:'Total Hardness',
+        cause:'Total hardness reflects dissolved Ca²⁺ and Mg²⁺ ions. Sources: dissolution of limestone (CaCO₃), dolomite (CaMg(CO₃)₂), gypsum (CaSO₄), and basic igneous rocks. Lake Dighyah-type values (11–14 meq/L) are characteristic of semi-arid areas with evaporitic geology and long water-rock contact times. High hardness causes scale formation in boilers, pipes, and heat exchangers, and increases soap consumption.',
+        methods:['Ion Exchange Softening','Lime-Soda Process','Nanofiltration','Reverse Osmosis'],
+        steps:[
+          'Ion exchange softening (most common): pass water through Na⁺-form strong acid cation (SAC) resin. Ca²⁺ + 2NaR → CaR₂ + 2Na⁺; Mg²⁺ similarly. Flow rate 10–30 BV/h. Regenerate with 10% NaCl at 5 BV. Output hardness < 0.5 meq/L.',
+          'Lime-soda process (carbonate hardness): add Ca(OH)₂ — precipitates CaCO₃. Add Na₂CO₃ for non-carbonate (sulphate/chloride) hardness: Ca²⁺ + Na₂CO₃ → CaCO₃↓ + 2Na⁺. For Mg²⁺: add excess Ca(OH)₂ → Mg(OH)₂↓. Settle in clarifier, filter.',
+          'For Lake Dighyah conditions (very high hardness 11–14 meq/L): two-stage process: (1) lime softening to remove ~60% hardness + carbonate precipitation; (2) ion exchange polishing to achieve final target.',
+          'Nanofiltration: NF membranes reject 80–90% of Ca²⁺/Mg²⁺ at 4–8 bar. Permeate contains soft water; concentrate requires disposal.',
+          'Reverse osmosis: 95–99% removal. Used where full demineralisation required (e.g., boiler feed water).',
+        ],
+        lab:{
+          method:'EDTA Titrimetric Method (Standard Method 2340 C)',
+          principle:'Ethylenediaminetetraacetic acid (EDTA) forms stable chelate complexes with Ca²⁺ and Mg²⁺ at pH 10. Eriochrome Black T (EBT) indicator forms a wine-red complex with metals — turns blue when all Ca²⁺/Mg²⁺ are chelated by EDTA at the endpoint. One mole EDTA = one mole divalent metal.',
+          steps:[
+            'Pipette 25 mL (or diluted equivalent) of sample into a 250 mL conical flask.',
+            'Add 1–2 mL pH 10 ammonia buffer (67.5 g NH₄Cl + 570 mL conc. NH₃ diluted to 1L).',
+            'Add 1–2 drops Eriochrome Black T indicator (0.5 g EBT + 4.5 g hydroxylamine hydrochloride in 100 mL ethanol). Solution turns wine-red/pink.',
+            'Titrate with 0.01M EDTA (disodium salt, Na₂EDTA·2H₂O). Add dropwise with constant swirling.',
+            'Endpoint: colour changes from wine-red → pure blue (no purple tinge). Record volume V (mL).',
+            'Total hardness (meq/L) = V × M_EDTA × 2 × 1000 / V_sample (mL). Or in mg/L as CaCO₃: × 100,050 / V_sample.',
+            'For separate Ca²⁺: titrate at pH 12–13 (NaOH addition precipitates Mg(OH)₂) using Murexide indicator. Mg²⁺ = total − Ca²⁺.',
+          ],
+          reagents:['0.01M EDTA (Na₂C₁₀H₁₄N₂O₈·2H₂O, dried 80°C)','pH 10 ammonia buffer','Eriochrome Black T indicator','Murexide indicator (for separate Ca²⁺)','Inhibitor solution (if Fe/Mn interference present): 250 mg NaCN or Na₂S solution'],
+          note:'Interferences: Fe³⁺, Mn²⁺, Cu²⁺, Zn²⁺ cause premature endpoint or fading. Add inhibitor (Na₂S·9H₂O, 5 mg/L). Do not use if cyanide regulations apply.',
+        }
+      },
+      Cl:{
+        name:'Chlorides Cl⁻',
+        cause:'Elevated chlorides indicate saltwater intrusion into groundwater, evaporative concentration in closed basins, road deicing salt runoff (NaCl, CaCl₂), industrial brine discharge (oil fields, chemical plants), or sewage inputs. In arid coastal regions like the Absheron Peninsula, chloride elevation often reflects evaporitic processes and Caspian Sea influence.',
+        methods:['Reverse Osmosis','Electrodialysis','Distillation','Blending','Nanofiltration'],
+        steps:[
+          'Reverse osmosis: most effective — 95–99% Cl⁻ removal. Required for Cl⁻ > 500 mg/L. Pre-treat for suspended solids (SDI < 5) and scale inhibition.',
+          'Electrodialysis reversal (EDR): DC electric field drives Cl⁻ through anion-selective membranes toward anode. Energy-efficient for moderate salinity (TDS 500–5000 mg/L). Periodic polarity reversal prevents scaling.',
+          'Distillation: evaporation and condensation — removes all ions including Cl⁻. Energy-intensive but produces high-purity water. Multi-effect distillation (MED) or vapour compression used at scale.',
+          'Blending: dilute chloride-rich source with low-chloride water. Calculate blend ratio: C_mix = (C₁·V₁ + C₂·V₂)/(V₁+V₂). Simple, effective when a clean source is available.',
+          'Source control: if sea/brine intrusion — hydraulic barrier wells (injection of fresh water) or subsurface physical barriers. Monitor and restrict over-extraction from aquifer.',
+        ],
+        lab:{
+          method:'Argentometric Titration — Mohr Method (SM 4500-Cl⁻ B)',
+          principle:'Silver nitrate (AgNO₃) precipitates Cl⁻ as AgCl (white, Ksp = 1.8×10⁻¹⁰). Potassium chromate (K₂CrO₄) indicator forms red Ag₂CrO₄ only after all Cl⁻ is precipitated — marking the endpoint. Reaction: Ag⁺ + Cl⁻ → AgCl↓ (white precipitate).',
+          steps:[
+            'Adjust 100 mL sample to pH 7–10 with NaHCO₃ or H₂SO₄. (Method fails outside this range.)',
+            'Add 1 mL K₂CrO₄ indicator (50 g/L). Solution turns yellow.',
+            'Titrate with 0.0141N AgNO₃ from a dark burette (light degrades AgNO₃). Stir continuously.',
+            'Endpoint: faint but persistent brick-red colour (Ag₂CrO₄ precipitate forms). Record volume V (mL).',
+            'Run a blank titration (distilled water + indicator) — subtract blank volume V_b.',
+            'Cl⁻ (mg/L) = (V − V_b) × N_AgNO3 × 35,450 / V_sample (mL).',
+            'If Cl⁻ > 150 mg/L: dilute sample and recalculate. If interference from sulphide/sulphite: pre-treat with H₂O₂.',
+          ],
+          reagents:['0.0141N AgNO₃ (2.395 g/L, standardised vs NaCl)','K₂CrO₄ indicator (50 g/L in distilled water)','0.0141N NaCl standard (for standardisation)','H₂SO₄ or NaHCO₃ for pH adjustment'],
+          note:'Alternative: Mercuric nitrate method (SM 4500-Cl⁻ C) — more precise at low Cl⁻ levels. Ion chromatography is the gold standard for simultaneous multi-anion analysis.',
+        }
+      },
+      NH4:{
+        name:'Ammonium NH₄⁺',
+        cause:'Ammonium is a key indicator of organic pollution. Sources: sewage and wastewater discharge, agricultural runoff (fertilisers — urea, ammonium nitrate), decomposition of organic matter (proteins → amino acids → NH₄⁺), anaerobic sediment diagenesis. In lakes, NH₄⁺ release from anoxic bottom sediments is a major internal loading process. High ammonium indicates recent organic contamination.',
+        methods:['Breakpoint Chlorination','Biological Nitrification','Air Stripping','Zeolite Ion Exchange'],
+        steps:[
+          'Breakpoint chlorination: add Cl₂ at weight ratio 7.6:1 (Cl₂:NH₄⁺-N). Reactions: 2NH₄⁺ + 3Cl₂ → N₂↑ + 6HCl + 2H⁺ (ideal). In practice, chloramines form first then break down at the breakpoint. Monitor Cl₂ dose with amperometric titration. Watch for trihalomethane (THM) formation.',
+          'Biological nitrification: use aerobic biofilm reactor or activated sludge. Nitrosomonas: NH₄⁺ + 1.5O₂ → NO₂⁻ + H₂O + 2H⁺ (requires 3.43 mg O₂/mg NH₄⁺-N). Nitrobacter: NO₂⁻ + 0.5O₂ → NO₃⁻. Maintain DO > 2 mg/L, pH 7–8, T > 10°C. Sludge retention time > 10 days.',
+          'Air stripping at high pH: raise pH to 10.5–11.5 with Ca(OH)₂ → shifts equilibrium NH₄⁺ → NH₃(aq) → NH₃(g). Pack tower with Pall rings, air:water ratio 300:1. Removal > 90% at T > 20°C. Requires post-treatment pH adjustment.',
+          'Zeolite (clinoptilolite) ion exchange: natural zeolite selectively adsorbs NH₄⁺ over Na⁺/K⁺/Ca²⁺. Capacity 10–20 mg NH₄⁺/g zeolite. Regenerate with 1M NaCl + NaOH. Low-cost, no energy required. Suitable for small systems.',
+          'Priority: ALWAYS identify and eliminate the pollution source first — treat only as secondary measure.',
+        ],
+        lab:{
+          method:'Nesslerisation (Colorimetric) or Phenate Method (SM 4500-NH₃)',
+          principle:'Nessler\'s reagent (K₂[HgI₄] in KOH) reacts with NH₄⁺ to form a yellow-brown colloidal complex (NH₂·Hg₂I₃·HgI or similar). Absorbance measured at 425 nm is proportional to NH₄⁺ concentration. Phenate method: NH₄⁺ + hypochlorite + phenol → indophenol blue (measured at 640 nm) — more sensitive, lower detection limit.',
+          steps:[
+            'Distil sample if turbid/coloured: add MgO, distil into boric acid receiver (25 mL 2% H₃BO₃). Collect 200 mL distillate.',
+            'Nesslerisation: pipette 50 mL sample/distillate into Nessler tube. Add 1 mL EDTA (50 g/L) to mask Ca²⁺/Mg²⁺ interference.',
+            'Add 2 mL Nessler reagent (Hg₂I₄·2KI in KOH). Mix immediately.',
+            'Allow colour to develop 10 min. Measure absorbance at 425 nm vs reagent blank.',
+            'Prepare calibration: 0, 0.05, 0.1, 0.2, 0.4, 0.8, 1.0 mg/L NH₄⁺-N from 100 mg/L standard (NH₄Cl dried 100°C).',
+            'NH₄⁺ (mg/L) = C from curve × dilution factor. Convert N to NH₄⁺: × 1.288.',
+            'Phenate alternative for low levels (< 0.05 mg/L): add sodium phenate + sodium hypochlorite + sodium nitroprusside catalyst → 640 nm absorbance.',
+          ],
+          reagents:['Nessler reagent (K₂[HgI₄] in 6M KOH) — TOXIC, handle with care','EDTA disodium (50 g/L)','NH₄Cl primary standard (anhydrous, 105°C dried)','MgO (light calcined, for distillation)','For phenate: sodium phenate, NaOCl, sodium nitroprusside'],
+          note:'Nessler reagent contains mercury — dispose as hazardous waste. Phenate method preferred in modern labs. Ion-selective electrode (ISE) for rapid field measurements (±10% accuracy).',
+        }
+      },
+      NO3:{
+        name:'Nitrates NO₃⁻',
+        cause:'Nitrate contamination is primarily anthropogenic: nitrogen fertilisers (NH₄NO₃, urea, KNO₃) leaching through soil, concentrated animal feeding operations (manure lagoons), municipal sewage effluent (incomplete denitrification), and atmospheric deposition. Nitrate persists in groundwater for decades due to slow subsurface transport. Risk: methemoglobinaemia in infants < 6 months (blue baby syndrome) at > 10 mg/L NO₃⁻-N.',
+        methods:['Biological Denitrification','Ion Exchange','Reverse Osmosis','Catalytic Reduction','Electrodialysis'],
+        steps:[
+          'Biological denitrification: heterotrophic bacteria (Pseudomonas, Paracoccus denitrificans) use NO₃⁻ as electron acceptor under anoxic conditions. Add methanol (CH₃OH) as carbon source: 6NO₃⁻ + 5CH₃OH → 3N₂↑ + 5CO₂ + 7H₂O + 6OH⁻. Dose 2.5 mg methanol per mg NO₃⁻-N. HRT 1–3 h. Produces N₂ gas — harmless. Requires post-treatment aeration.',
+          'Ion exchange: load water onto selective anion resin (strong base, Type I, NO₃⁻-selective, e.g. Amberlite IRA-996). Exchange NO₃⁻ for Cl⁻. Regenerate with 4% NaCl. Capacity ~30 meq/L resin. Remove sulphate first (competes strongly). Breakthrough monitored by conductivity.',
+          'Reverse osmosis: 85–95% NO₃⁻ removal. Reject stream (10–15% of flow) concentrated in nitrate — requires disposal. Pre-filtration essential.',
+          'Catalytic reduction (emerging): pass H₂ gas over Pd-Cu bimetallic catalyst at 20°C — NO₃⁻ → NO₂⁻ → NH₄⁺ → N₂. Selectivity for N₂ vs NH₄⁺ depends on pH and H₂ concentration. Lab-scale proven, pilot systems available.',
+          'Source control (long-term): precision fertiliser application, cover crops, constructed wetlands as buffer strips, aquifer recharge with treated water.',
+        ],
+        lab:{
+          method:'UV Spectrophotometry (SM 4500-NO₃⁻ B) or Cadmium Reduction (SM 4500-NO₃⁻ E)',
+          principle:'UV method: NO₃⁻ absorbs UV light at 220 nm. Organic matter also absorbs at 220 nm — correction applied using absorbance at 275 nm. Cd reduction method: NO₃⁻ is reduced to NO₂⁻ by passage through a cadmium column. NO₂⁻ then measured by diazotisation–coupling reaction (pink/red colour at 543 nm) — more sensitive and selective.',
+          steps:[
+            'UV method: filter sample through 0.45 µm membrane. Acidify to pH 2–3 with 1 mL 1N HCl per 100 mL.',
+            'Measure absorbance at 220 nm and 275 nm against reagent blank in 1 cm quartz cuvette.',
+            'Corrected A = A₂₂₀ − 2×A₂₇₅ (subtracts organic matter contribution).',
+            'Prepare standards 0–7 mg/L NO₃⁻-N from KNO₃ stock. Read concentration from calibration curve.',
+            'Cadmium reduction (for precision): prepare activated Cd column (Cu-plated Cd granules, 3–5 mm).',
+            'Pass 25 mL buffered sample through Cd column at 7–10 mL/min. Collect 25 mL eluate.',
+            'Add 0.5 mL sulfanilamide reagent (10 g sulfanilamide in 100 mL 30% H₃PO₄). Wait 2 min.',
+            'Add 0.5 mL NEDA reagent (N-(1-naphthyl)ethylenediamine·2HCl, 1 g/L). Wait 10 min.',
+            'Measure at 543 nm. NO₃⁻ + NO₂⁻ (mg/L as N) = from standard curve. Subtract direct NO₂⁻ measurement.',
+          ],
+          reagents:['HCl (1N)','KNO₃ primary standard (dried 105°C, 100 mg/L N stock)','Sulfanilamide reagent','NEDA reagent (N-(1-naphthyl)ethylenediamine dihydrochloride)','Cu-activated Cd granules (for Cd column)','NH₄Cl–EDTA buffer (for column eluent)'],
+          note:'UV method: interferences from dissolved organics, surfactants, NO₂⁻. Cadmium is toxic — handle Cd column waste as hazardous material. Ion chromatography (IC) preferred in modern labs — simultaneous NO₃⁻/NO₂⁻/Cl⁻/SO₄²⁻ in one run.',
+        }
+      },
+      NO2:{
+        name:'Nitrites NO₂⁻',
+        cause:'Nitrites are an unstable intermediate in the nitrogen cycle. High concentrations indicate: (1) incomplete nitrification — insufficient oxygen prevents NO₂⁻ from converting to NO₃⁻; (2) biological denitrification paused at NO₂⁻ step; (3) recent organic pollution event providing substrate for bacteria. Nitrites are acutely toxic: oxidise haemoglobin to methaemoglobin. In distribution systems, elevated NO₂⁻ often signals nitrification in chloraminated pipes.',
+        methods:['Chlorination','Ozonation','Biological Nitrification','KMnO₄ Oxidation','Aeration'],
+        steps:[
+          'Chlorination: Cl₂ rapidly oxidises NO₂⁻ → NO₃⁻. Stoichiometric dose: 5 mg Cl₂ per mg NO₂⁻-N. Reaction: NO₂⁻ + Cl₂ + H₂O → NO₃⁻ + 2H⁺ + 2Cl⁻. Instant reaction. Monitor residual chlorine.',
+          'Ozonation: O₃ oxidises NO₂⁻ at dose 2–4 mg/L in 5–10 min contact time. Very effective: NO₂⁻ + O₃ → NO₃⁻ + O₂. Also inactivates pathogens. No halogenated by-products.',
+          'KMnO₄ oxidation: potassium permanganate (1 mg KMnO₄ per mg NO₂⁻-N) — used as emergency oxidant in water distribution. Produces MnO₂ precipitate — filter after treatment.',
+          'Complete biological nitrification: if using biological treatment, ensure sufficient dissolved oxygen (DO > 3 mg/L), adequate sludge retention time (SRT > 15 d at 15°C), and neutral pH. Ammonia → NO₂⁻ → NO₃⁻ must be completed.',
+          'Investigate source: NO₂⁻ spikes are transient — sample upstream and check for sewage overflow, agricultural runoff, or chloramination system failure.',
+        ],
+        lab:{
+          method:'Diazotisation–Coupling Colorimetric Method (SM 4500-NO₂⁻ B)',
+          principle:'In acidic solution, NO₂⁻ reacts with sulfanilamide to form a diazonium salt, which couples with N-(1-naphthyl)ethylenediamine (NEDA) to produce a red-pink azo dye. Absorbance at 543 nm is proportional to NO₂⁻ concentration. This is the most sensitive and selective method for NO₂⁻ — detection limit 0.001 mg/L.',
+          steps:[
+            'Filter sample through 0.45 µm membrane immediately upon collection. Analyse within 24 h (preserve at 4°C, max 2°C in field).',
+            'Pipette 50 mL sample into a 100 mL flask at room temperature (15–25°C — temperature affects colour development).',
+            'Add 1 mL sulfanilamide reagent (10 g sulfanilamide dissolved in 100 mL 30% phosphoric acid H₃PO₄). Mix and wait exactly 2–8 minutes.',
+            'Add 1 mL NEDA reagent (1 g N-(1-naphthyl)ethylenediamine·2HCl dissolved in 1 L distilled water). Mix immediately.',
+            'Allow colour to develop 10 minutes (stable 30 min). Measure absorbance at 543 nm vs reagent blank.',
+            'Prepare calibration: 0, 0.002, 0.01, 0.05, 0.1, 0.2, 0.5 mg/L NO₂⁻-N from NaNO₂ standard (stored frozen, fresh weekly).',
+            'NO₂⁻ (mg/L as N) from calibration curve × 3.285 = mg/L NO₂⁻.',
+          ],
+          reagents:['Sulfanilamide (aminobenzenesulfonamide, ACS grade)','NEDA (N-(1-naphthyl)ethylenediamine dihydrochloride, 1 g/L)','H₃PO₄ (85%, reagent grade)','NaNO₂ primary standard (fresh, 100 mg/L stock in 1 mL CHCl₃ preservative)','0.45 µm membrane filters'],
+          note:'CRITICAL: samples must be collected on ice and analysed same day. Even brief warming allows bacterial NO₂⁻ oxidation. NEDA reagent degrades — store in dark at 4°C, replace monthly. Colour fades after 30 min — read promptly.',
+        }
+      },
+      PO4:{
+        name:'Phosphates PO₄³⁻',
+        cause:'Phosphate is the primary eutrophication trigger. Sources: detergents (sodium tripolyphosphate, despite bans), agricultural fertilisers (superphosphate), sewage effluent (human waste contains ~3–4 mg P/person/day), industrial effluents (food processing, fertiliser plants), and natural weathering of apatite minerals. In stratified lakes, anaerobic bottom conditions release phosphate from sediments (internal loading) — a key mechanism maintaining eutrophication even after external inputs are reduced.',
+        methods:['FeCl₃/Alum Precipitation','Lime Precipitation','Biological Removal (EBPR)','Constructed Wetlands','Alum Dosing to Lake'],
+        steps:[
+          'Chemical precipitation with iron: add FeCl₃ at molar ratio Fe:P = 1.5–2.5:1. Reaction: Fe³⁺ + PO₄³⁻ → FePO₄↓ (Ksp = 9.9×10⁻¹⁶). Optimal pH 5–6. Coagulate, settle, filter. Reduces dissolved PO₄³⁻ to < 0.1 mg/L.',
+          'Aluminium coagulation: add Al₂(SO₄)₃ (alum) at Al:P molar ratio 2–4:1. AlPO₄ precipitates (Ksp = 9.8×10⁻²¹). Optimal pH 6–7. Generates Al(OH)₃ floc — also removes colloidal phosphorus. Common in drinking water and wastewater treatment.',
+          'Lime precipitation: add Ca(OH)₂ to raise pH > 9.5. Forms hydroxyapatite: 5Ca²⁺ + 3PO₄³⁻ + OH⁻ → Ca₅(PO₄)₃OH↓. Very effective at > 10 mg/L PO₄³⁻. Post-treatment: recarbonate with CO₂ to restore pH.',
+          'Enhanced biological phosphorus removal (EBPR): anaerobic zone followed by aerobic zone in activated sludge. In anaerobic zone, polyphosphate-accumulating organisms (PAOs) release P and take up carbon (VFAs). In aerobic zone, PAOs sequester P (up to 20% of dry weight). Final P in waste sludge. Achieves < 0.5 mg/L total P.',
+          'Lake restoration — alum dosing: apply aluminium sulphate directly to lake water column (50–200 g Al/m² surface area). Forms Al-P floc that settles to sediment surface, capping internal loading. Effect lasts 5–15 years depending on redox conditions.',
+          'Constructed wetlands: plant Phragmites australis or Typha sp. at 4–5 plants/m². Phosphate uptake: 0.5–2 g P/m²/year. Harvest above-ground biomass annually to permanently remove P from watershed.',
+        ],
+        lab:{
+          method:'Ascorbic Acid Method — Molybdenum Blue (SM 4500-P E)',
+          principle:'In acid solution, orthophosphate reacts with ammonium molybdate and antimony potassium tartrate to form phosphomolybdic acid, which is reduced by ascorbic acid to an intensely blue molybdenum blue complex. Absorbance at 880 nm is proportional to PO₄³⁻ concentration. Detection limit: 0.01 mg/L. This measures dissolved reactive phosphorus (DRP = mainly PO₄³⁻).',
+          steps:[
+            'Filter sample immediately through 0.45 µm membrane upon collection. Analyse within 48 h (preserve with H₂SO₄ to pH < 2 for storage).',
+            'Pipette 50 mL (or diluted to contain 0.01–1.3 mg/L P) into a 100 mL Erlenmeyer flask.',
+            'Add 0.05 mL 5N H₂SO₄ if not already acidified. pH must be 3.0–3.5 during colour development.',
+            'Add 8 mL combined reagent (in order: 50 mL 5N H₂SO₄ + 5 mL antimony potassium tartrate (0.14%) + 15 mL ammonium molybdate (4%) + 30 mL ascorbic acid (1.76%) — prepare fresh daily, keep at 10°C).',
+            'Mix thoroughly. Allow colour to develop 10 minutes at 20–25°C (stable 30 min).',
+            'Measure absorbance at 880 nm (or 700 nm if 880 nm not available) vs reagent blank.',
+            'Prepare calibration: 0, 0.05, 0.1, 0.2, 0.5, 1.0, 1.3 mg/L PO₄³⁻-P from KH₂PO₄ stock (dried 105°C, 100 mg P/L).',
+            'Total phosphorus: digest sample with persulphate (K₂S₂O₈) + H₂SO₄ in autoclave 30 min at 121°C before colorimetric measurement — converts organic P and polyphosphates to PO₄³⁻.',
+          ],
+          reagents:['Ammonium molybdate ((NH₄)₆Mo₇O₂₄·4H₂O), 40 g/L','Antimony potassium tartrate (K(SbO)C₄H₄O₆·0.5H₂O), 1.4 g/L','Ascorbic acid (C₆H₈O₆), 17.6 g/L (prepare fresh)','5N H₂SO₄','KH₂PO₄ primary standard (dried 105°C)','For total P: K₂S₂O₈, H₂SO₄ (for persulphate digestion)'],
+          note:'Combined reagent must be prepared in the correct order — mix will turn blue if combined wrong. Silica and arsenate interfere at high concentrations. Turbidity: centrifuge or filter before measurement.',
+        }
+      },
+      DO:{
+        name:'Dissolved Oxygen O₂',
+        cause:'Dissolved oxygen (DO) depletion occurs when oxygen consumption (biological decomposition of organic matter, chemical oxidation reactions, sediment oxygen demand) exceeds reaeration from atmosphere and photosynthesis. Key drivers: high organic load (BOD), warm temperatures (O₂ solubility decreases — at 25°C saturation = 8.3 mg/L vs 14.6 mg/L at 0°C), eutrophication (algal decomposition), thermal stratification preventing vertical mixing, and stagnant conditions. Below 4 mg/L: fish stress; below 2 mg/L: fish kills.',
+        methods:['Surface Aeration','Diffused Aeration','Pure O₂ Injection','Destratification','Reduce Organic Load'],
+        steps:[
+          'Surface aerators (paddle wheels/fountain aerators): standard oxygen transfer rate (SOTR) 1–3 kg O₂/kWh. Install at density of 1 aerator per 1000–5000 m² of lake surface. Effective for shallow water (< 3 m depth). Minimum target: DO > 5 mg/L for fishery use.',
+          'Fine-bubble diffused aeration: submerged membrane diffusers deliver air/O₂ as 1–3 mm bubbles. Standard aeration efficiency 2–4 kg O₂/kWh. More energy-efficient than surface aerators for deep water. Space diffusers at 1–2 m intervals on bottom grid.',
+          'Pure oxygen injection (hypolimnetic oxygenation): inject liquid O₂ through a diffuser/aspirator into the hypolimnion. Methods: bubble plume, U-tube aerator, or Side-Stream Supersaturation (SSS). Maintains DO without disturbing thermal stratification. Target bottom DO > 4 mg/L.',
+          'Destratification: install vertical mixing pumps (1–2 kW per 10,000 m³ volume) or bubble curtains to disrupt thermocline. Oxygenated surface water mixes with anoxic bottom layer. Warning: in eutrophic lakes, destratification can trigger algal blooms by mixing nutrients — assess carefully.',
+          'Organic load reduction: address sewage discharges, implement constructed wetlands, reduce nutrient inputs to decrease algal biomass production. Long-term solution — mechanical aeration is symptomatic treatment only.',
+        ],
+        lab:{
+          method:'Winkler Titrimetric Method (SM 4500-O B) or Membrane Electrode (SM 4500-O G)',
+          principle:'Winkler: in alkaline conditions, O₂ oxidises Mn²⁺ → Mn⁴⁺ (MnO₂) brown precipitate. Acidification releases I₂ from KI (Mn⁴⁺ + 2I⁻ → Mn²⁺ + I₂), which is titrated with sodium thiosulphate (Na₂S₂O₃). Each mole O₂ ≡ 4 moles Na₂S₂O₃. Considered the reference method for calibrating electrodes.',
+          steps:[
+            'CRITICAL: sample collection — fill 300 mL BOD bottle to overflow, cap without air bubbles. Add reagents immediately on site.',
+            'Add 1 mL MnSO₄ solution (36 g MnSO₄·H₂O per 100 mL) — insert pipette below surface.',
+            'Add 1 mL alkaline KI–NaN₃ reagent (50 g NaOH + 15 g KI + 1 g NaN₃ per 100 mL) — insert below surface. Cap bottle immediately.',
+            'Mix by inverting 20× until precipitate forms. Allow to settle to lower 1/3 of bottle.',
+            'Add 1 mL conc. H₂SO₄. Mix to dissolve precipitate — solution turns yellow (I₂ released).',
+            'Transfer 203 mL to Erlenmeyer flask. Titrate with 0.025M Na₂S₂O₃ to pale yellow, add 0.5 mL starch indicator, continue to colourless endpoint.',
+            'DO (mg/L) = V_Na₂S₂O₃ × M × 32,000 × (V_bottle / V_bottle − 2) / V_sample. Simplified: V(mL) × 0.2 mg O₂/mL (for 0.025M Na₂S₂O₃, 203 mL sample, 300 mL bottle).',
+            'Electrode method (field): calibrate membrane DO meter in air-saturated water. Two-point calibration: 0% (sodium sulfite solution) and 100% (air-saturated). Measure in situ at depth. Record temperature simultaneously.',
+          ],
+          reagents:['MnSO₄·H₂O solution (36 g/100 mL)','Alkaline KI–NaN₃ reagent (NaOH + KI + NaN₃)','Conc. H₂SO₄','0.025M Na₂S₂O₃ (standardised with K₂Cr₂O₇)','Starch indicator (1%, freshly prepared)','NaN₃ included to prevent NO₂⁻ interference (Rideal-Stewart modification)'],
+          note:'Winkler method is sensitive to Fe²⁺/Fe³⁺, NO₂⁻ (use azide modification), and residual Cl₂. Electrode method: membrane must be clean and electrolyte fresh. Calibrate before each sampling day.',
+        }
+      },
+      pH:{
+        name:'pH Level',
+        cause:'pH outside 6.5–8.5 disrupts aquatic chemistry and biology. Low pH (acidification): acid rain (H₂SO₄, HNO₃ from SO₂/NOₓ emissions), acid mine drainage (pyrite oxidation), CO₂ enrichment from respiration/decomposition. High pH: algal photosynthesis consuming CO₂ (pH can reach 10+ during blooms), industrial alkaline discharges (tanneries, paper mills), dissolution of carbonate minerals. pH controls metal solubility (Al, Mn, Fe mobilised at low pH), ammonia speciation (NH₄⁺/NH₃ ratio), and chlorination efficiency.',
+        methods:['Lime Neutralisation (low pH)','CO₂ Injection (high pH)','Soda Ash Dosing','Acid Dosing','Limestone Channels'],
+        steps:[
+          'Low pH — lime neutralisation: add Ca(OH)₂ slurry (lime milk, 5–10%). Dose calculated from acid titration curve: determine amount of base (in meq) required to reach pH 7.0 per litre. Add proportionally. Install in-line static mixer. Target pH 7.5–8.0.',
+          'Low pH — CaCO₃ filters: pass acidic water through crushed limestone bed (>98% CaCO₃). Dissolution is self-limiting at pH 6.5–7.0. Excellent for small flow rates. No chemical dosing required. Replace limestone when exhausted (bed weight < 70% initial).',
+          'Low pH — soda ash (Na₂CO₃): dissolve and dose as 10% solution. More soluble than lime, more precise pH control. Used in small drinking water systems. More expensive.',
+          'High pH — CO₂ injection: inject CO₂ gas at 1–5 g/m³ through fine-bubble diffuser. CO₂ + H₂O → H₂CO₃ → H⁺ + HCO₃⁻. Reduces pH without introducing chemicals. Precise, automatic control. Suitable for drinking water.',
+          'High pH — sulphuric acid dosing: add 10–20% H₂SO₄ solution via metering pump. Inexpensive, effective. Requires safety precautions (corrosive). Calculate dose from neutralisation curve.',
+          'Anoxic limestone drain (ALD): for chronic acid mine drainage — route water through buried limestone in anoxic conditions. Prevents Fe oxidation that armours limestone surface. Raises pH from 3–4 to 6–7. Long-term passive treatment.',
+        ],
+        lab:{
+          method:'Electrometric Method — Glass Electrode (SM 4500-H⁺ B) — Reference Method',
+          principle:'A glass electrode generates an electrochemical potential (millivolts) proportional to H⁺ activity according to the Nernst equation: E = E₀ + (RT/nF) × ln[H⁺]. The slope is −59.16 mV/pH unit at 25°C. The reference electrode (Ag/AgCl in KCl) provides a stable half-cell potential. Combination electrodes include both in one body. Temperature compensation is critical — slope changes with T.',
+          steps:[
+            'Calibrate pH meter with two NIST-traceable buffer standards bracketing expected sample range. Use pH 4.00 + pH 7.00 (for acidic waters), or pH 7.00 + pH 10.01 (for alkaline). Check slope: should be 95–105% (−56 to −62 mV/pH).',
+            'Rinse electrode with distilled water, blot gently (do not wipe — creates static). Never wipe with tissue.',
+            'Immerse electrode in sample. Stir gently. Allow reading to stabilise (10–60 sec). Record pH and temperature.',
+            'For field measurements: use portable meter with ATC (automatic temperature compensation). Calibrate before each sampling event.',
+            'For low-conductivity samples (< 100 µS/cm): use low-ionic-strength buffers — standard buffers cause junction potential errors. Or use a reference electrode with calomel/sleeve junction.',
+            'pH must be measured on-site or within 15 min — CO₂ exchange, microbial activity, and redox reactions change pH rapidly after sampling.',
+            'QA/QC: run a third buffer as verification after calibration — must read within ±0.05 pH units. Record calibration data and slope in logbook.',
+          ],
+          reagents:['NIST pH 4.00 buffer (potassium hydrogen phthalate, 0.05M, 20°C)','NIST pH 7.00 buffer (phosphate, equimolar KH₂PO₄/Na₂HPO₄)','NIST pH 10.01 buffer (carbonate/bicarbonate)','KCl (3M or saturated) for reference electrode filling','Distilled/deionised water for rinsing'],
+          note:'pH electrodes require conditioning: soak in pH 4 or 7 buffer 30 min before first use daily, or in KCl solution overnight. Replace electrode when slope < 90% or if response time > 60 sec. Store in KCl solution, never in distilled water (depletes reference junction).',
+        }
+      }
+    }
+  },
+
+  ru:{
+    title:'🔧 Рекомендации по очистке',
+    noIssues:'✅ Очистка не требуется — все показатели в норме.',
+    tabs:['⚠️ Причина','🔧 Методы очистки','🔬 Лаб. анализ'],
+    params:{
+      SO4:{
+        name:'Сульфаты SO₄²⁻',
+        cause:'Высокие концентрации сульфатов обусловлены растворением гипса (CaSO₄·2H₂O) и ангидрита из вмещающих пород, промышленными стоками (металлургия, химические заводы, горнодобывающая промышленность), кислотными осадками (SO₂ от сжигания топлива → SO₄²⁻ в атмосферных осадках), или окислением пирита (FeS₂) в почвах и донных отложениях.',
+        methods:['Обратный осмос','Ионный обмен','Нанофильтрация','Электродиализ','Осаждение BaSO₄'],
+        steps:[
+          'Обратный осмос (RO): пропустить воду через полупроницаемые мембраны при давлении 5–15 бар — удаляет до 99% сульфатов. Наиболее эффективен для питьевой воды.',
+          'Ионный обмен: загрузить воду на сильноосновной анионит (напр. Amberlite IRA-400). SO₄²⁻ вытесняется на Cl⁻ или OH⁻. Регенерация 4–8% NaCl или 1М NaOH. Ёмкость ~20–40 г SO₄²⁻/л смолы.',
+          'Нанофильтрация: мембраны с MWCO 200–400 Да эффективно удаляют двухвалентные ионы. Рабочее давление 4–8 бар. Задержание сульфатов 80–95%.',
+          'Электродиализная инверсия (EDR): электрическое поле переводит SO₄²⁻ через анионселективные мембраны к аноду. Для солоноватых вод (500–5000 мг/л SO₄²⁻).',
+          'Осаждение BaSO₄: добавить BaCl₂ → осаждение BaSO₄ (Ksp = 1,1×10⁻¹⁰). Доза: 2,09 мг BaCl₂ на 1 мг SO₄²⁻. Отфильтровать. Проверить избыток Ba²⁺ (токсичен).',
+          'Для природных водоёмов: ревизия промышленных сбросов в водосборе; устранение окисления пирита в эродированных берегах.',
+        ],
+        lab:{
+          method:'Турбидиметрический метод (SM 4500-SO₄²⁻ E) / Гравиметрический (BaSO₄)',
+          principle:'Ионы сульфата осаждаются хлоридом бария (BaCl₂) в кислой среде с образованием взвеси сульфата бария (BaSO₄). Турбидиметрия измеряет рассеивание света взвесью; гравиметрия взвешивает высушенный осадок.',
+          steps:[
+            'Отфильтровать 100 мл пробы. Подкислить до pH 4,0–4,5 соляной кислотой.',
+            'Добавить 20 мл кондиционирующего раствора (глицерин + HCl + этанол + NaCl — стабилизирует взвесь BaSO₄).',
+            'При перемешивании добавить точно 0,3 г кристаллов BaCl₂·2H₂O. Перемешивать ровно 60 секунд.',
+            'Немедленно перенести в кювету. Измерить оптическую плотность при 420 нм в течение 3–5 минут.',
+            'Приготовить калибровочные растворы: 0, 5, 10, 20, 40, 80 мг/л SO₄²⁻.',
+            'Рассчитать концентрацию по градуировочному графику. Диапазон: 1–40 мг/л (турбидиметрия); до 500 мг/л при разбавлении.',
+            'Гравиметрический вариант: фильтрование через взвешенный стеклянный фильтр, сушка при 105°С 2ч, охлаждение в эксикаторе, взвешивание.',
+          ],
+          reagents:['BaCl₂·2H₂O','HCl (1:1)','Кондиционирующий реагент (глицерин, этанол, NaCl)','Стандарт сульфата (K₂SO₄, 1000 мг/л)'],
+          note:'Ионная хроматография (ИХ) — наиболее точный метод. Одновременное определение SO₄²⁻, Cl⁻, NO₃⁻, PO₄³⁻. Предел обнаружения ~0,1 мг/л.',
+        }
+      },
+      CO3:{
+        name:'Карбонаты CO₃²⁻',
+        cause:'Повышенные карбонаты указывают на высокощелочные условия (pH > 8,3). Источники: растворение кальцита (CaCO₃) и доломита при высоком pH, геотермальные поступления, промышленные щелочные стоки (цементные заводы, бумажные комбинаты), фотосинтез водорослей, потребляющих CO₂ и сдвигающих карбонатное равновесие в сторону CO₃²⁻.',
+        methods:['Подкисление CO₂','Известково-содовое умягчение','Катионный обмен','Кислотование'],
+        steps:[
+          'Подкисление CO₂: ввод CO₂ в количестве 0,5–2 кг/м³ для перевода CO₃²⁻ → HCO₃⁻ → H₂CO₃. Снижает pH до 7,0–8,0. Без остаточных химикатов.',
+          'Известково-содовое умягчение: добавить известковое молоко Ca(OH)₂ → осаждение CaCO₃. Эффективно в сочетании со снижением жёсткости.',
+          'Катионит в H⁺-форме: пропустить через сильнокислотный катионит (КУ-2) — снижает щелочность и жёсткость одновременно. Регенерация H₂SO₄.',
+          'Кислотное дозирование: добавить H₂SO₄ или HCl до pH 8,3 — CO₃²⁻ полностью переходит в HCO₃⁻. При необходимости дальнейшей нейтрализации — аэрация.',
+          'Для озёр: снижение численности водорослей (контроль фосфатов) предотвращает фотосинтетическое накопление карбонатов.',
+        ],
+        lab:{
+          method:'Потенциометрическое титрование (SM 2320 B) — метод pH-контроля',
+          principle:'Карбонатная щелочность определяется титрованием стандартной кислотой (H₂SO₄ или HCl) до pH 8,3 (CO₃²⁻ → HCO₃⁻), затем до pH 4,5 (HCO₃⁻ → H₂CO₃). Индикатор фенолфталеин меняет цвет при pH 8,3; смесь бромкрезолового зелёного с метиловым красным — при pH 4,5.',
+          steps:[
+            'В коническую колбу отобрать 100 мл нефильтрованной пробы. Не встряхивать (потери CO₂).',
+            'Добавить 3 капли фенолфталеина. Розовый цвет → карбонаты присутствуют.',
+            'Титровать 0,02н H₂SO₄ до обесцвечивания (pH 8,3). Зафиксировать объём V₁ (мл).',
+            'Добавить индикатор бромкрезол-зелёный/метиловый красный.',
+            'Продолжить титрование до pH 4,5 (переход серо-зелёный → розово-красный). Зафиксировать V₂ (мл).',
+            'CO₃²⁻ (мг/л) = V₁ × N_кислоты × 60000 / V_пробы (мл).',
+            'Для точности использовать pH-метр вместо индикаторов.',
+          ],
+          reagents:['0,02н H₂SO₄ (стандартизация по Na₂CO₃)','Фенолфталеин (1% в 60% этаноле)','Смешанный индикатор бромкрезол-зелёный/метиловый красный','CO₂-свободная дистиллированная вода'],
+          note:'Пробы анализировать в течение 24 ч. Не фильтровать перед титрованием. Хранить при 4°C.',
+        }
+      },
+      HCO3:{
+        name:'Гидрокарбонаты HCO₃⁻',
+        cause:'Гидрокарбонаты — доминирующая форма щелочности большинства природных вод. Высокие концентрации обусловлены растворением CO₂ в воде (CO₂ + H₂O → H₂CO₃ → H⁺ + HCO₃⁻), выветриванием карбонатных пород, длительным временем пребывания подземных вод в известняковых горизонтах, разложением органики. Высокий HCO₃⁻ вызывает накипеобразование и ощелачивание орошаемых почв.',
+        methods:['Аэрация','Известковое умягчение','Нейтрализация кислотой','Обратный осмос'],
+        steps:[
+          'Аэрация (при умеренных значениях): разбрызгивание через насадочные колонны. CO₂ улетучивается → HCO₃⁻ + H⁺ → H₂CO₃ → CO₂↑ + H₂O. Снижение HCO₃⁻ на 20–40%. Без химикатов.',
+          'Известковое умягчение: Ca(OH)₂ в дозе 1 мг-экв на 1 мг-экв HCO₃⁻. Осаждение CaCO₃. Совместное снижение жёсткости и щелочности.',
+          'Кислотная нейтрализация: добавить H₂SO₄ или HCl до pH 4,3 — все HCO₃⁻ переходят в H₂CO₃. Затем аэрация для отдувки CO₂.',
+          'Обратный осмос: удаление HCO₃⁻ на 95–98%. При производстве воды высокой чистоты.',
+          'Для оросительной воды: смешивание с низкощелочным источником или подача H₂SO₄ в оросительную сеть.',
+        ],
+        lab:{
+          method:'Потенциометрическое титрование до pH 4,5 (SM 2320 B)',
+          principle:'Щелочность гидрокарбонатов определяется титрованием стандартной серной кислотой до точки эквивалентности pH 4,5, где весь HCO₃⁻ переходит в H₂CO₃. Объём кислоты прямо пропорционален концентрации HCO₃⁻.',
+          steps:[
+            'Отобрать 200 мл пробы без контакта с воздухом. Анализировать в течение 6 часов.',
+            'Отмерить 100 мл в стакан. Погрузить откалиброванный электрод pH.',
+            'Титровать 0,02н H₂SO₄ из микробюретки, добавляя по каплям при pH ≈ 4,5.',
+            'Зафиксировать объём V (мл) кислоты до достижения pH 4,5.',
+            'HCO₃⁻ (мг/л) = V × N × 61000 / V_пробы.',
+          ],
+          reagents:['0,02н H₂SO₄','pH-метр с термокомпенсацией','Магнитная мешалка'],
+          note:'Не использовать пробы, стоявшие открытыми > 6 ч — обмен CO₂ с атмосферой искажает результат. Хранить при 4°C, анализировать в день отбора.',
+        }
+      },
+      hardness:{
+        name:'Общая жёсткость',
+        cause:'Жёсткость обусловлена растворёнными Ca²⁺ и Mg²⁺. Источники: растворение известняка (CaCO₃), доломита (CaMg(CO₃)₂), гипса (CaSO₄), основных изверженных пород. Значения типа оз. Дигях (11–14 мг-экв/л) характерны для засушливых регионов с эвапоритовой геологией. Высокая жёсткость вызывает образование накипи в котлах, трубопроводах и теплообменниках.',
+        methods:['Ионный обмен (умягчение)','Известково-содовый метод','Нанофильтрация','Обратный осмос'],
+        steps:[
+          'Ионообменное умягчение: пропустить через Na⁺-катионит (КУ-2). Ca²⁺ + 2NaR → CaR₂ + 2Na⁺. Регенерация 10% NaCl (5 объёмов смолы). Жёсткость на выходе < 0,5 мг-экв/л.',
+          'Известково-содовый процесс: Ca(OH)₂ — для карбонатной жёсткости; Na₂CO₃ — для некарбонатной (Ca²⁺ + Na₂CO₃ → CaCO₃↓ + 2Na⁺). Осаждение Mg²⁺: избыток Ca(OH)₂ → Mg(OH)₂↓.',
+          'Для условий оз. Дигях (жёсткость 11–14 мг-экв/л): двухступенчатая обработка — известковое умягчение (снижение ~60%) + ионный обмен (полировка).',
+          'Нанофильтрация: задержание Ca²⁺/Mg²⁺ 80–90% при 4–8 бар. Пермеат — умягчённая вода.',
+          'Обратный осмос: 95–99% удаления. Для питательной воды котлов и технологических нужд.',
+        ],
+        lab:{
+          method:'Комплексонометрическое титрование ЭДТА (SM 2340 C)',
+          principle:'ЭДТА (этилендиаминтетрауксусная кислота) образует устойчивые хелаты с Ca²⁺ и Mg²⁺ при pH 10. Индикатор Эриохром чёрный Т (ЭТ-00) образует красно-фиолетовый комплекс с металлами и становится синим в точке эквивалентности (все металлы связаны ЭДТА). 1 моль ЭДТА ≡ 1 моль двухвалентного металла.',
+          steps:[
+            'Отмерить 25 мл пробы (или разбавленный эквивалент) в коническую колбу 250 мл.',
+            'Добавить 1–2 мл аммиачного буфера pH 10 (67,5 г NH₄Cl + 570 мл конц. NH₃, разбавить до 1 л).',
+            'Добавить 1–2 капли индикатора Эриохром чёрный Т (0,5 г ЭТ-00 + 4,5 г NH₂OH·HCl в 100 мл этанола). Раствор красно-фиолетовый.',
+            'Титровать 0,01М ЭДТА. Добавлять по каплям при непрерывном перемешивании.',
+            'Точка эквивалентности: переход красно-фиолетовый → чисто синий. Зафиксировать объём V (мл).',
+            'Жёсткость (мг-экв/л) = V × M_ЭДТА × 2 × 1000 / V_пробы (мл).',
+            'Ca²⁺ отдельно: pH 12–13 (NaOH), индикатор мурексид. Mg²⁺ = общая − Ca²⁺.',
+          ],
+          reagents:['0,01М ЭДТА (Na₂C₁₀H₁₄N₂O₈·2H₂O, высушен 80°C)','Аммиачный буфер pH 10','Индикатор ЭТ-00 (Эриохром чёрный Т)','Мурексид (для Ca²⁺)','Ингибитор (Na₂S·9H₂O при наличии Fe/Mn)'],
+          note:'Помехи: Fe³⁺, Mn²⁺, Cu²⁺, Zn²⁺ — добавить ингибитор (Na₂S). Не применять при ограничениях по цианидам.',
+        }
+      },
+      Cl:{
+        name:'Хлориды Cl⁻',
+        cause:'Избыток хлоридов свидетельствует о засолении: подтягивании морских вод, промышленных рассольных стоках (нефтяные месторождения, химические предприятия), смыве дорожных реагентов (NaCl, CaCl₂), поступлении сточных вод. В засушливых прибрежных районах (Абшеронский полуостров) хлориды отражают влияние эвапоритов и Каспийского моря.',
+        methods:['Обратный осмос','Электродиализ','Дистилляция','Разбавление','Нанофильтрация'],
+        steps:[
+          'Обратный осмос: наиболее эффективный — 95–99% удаления Cl⁻. При Cl⁻ > 500 мг/л для питьевой воды.',
+          'Электродиализная инверсия (EDR): электрическое поле переводит Cl⁻ через анионселективные мембраны. Для умеренной минерализации (500–5000 мг/л).',
+          'Дистилляция: испарение и конденсация — удаляет все ионы. Энергоёмко, производит воду высокой чистоты.',
+          'Разбавление: смешать с малохлоридным источником. C_смеси = (C₁V₁ + C₂V₂)/(V₁+V₂).',
+          'Контроль источника: при засолении из-за морского подпора — гидравлические барьеры (нагнетательные скважины). Ограничить водоотбор.',
+        ],
+        lab:{
+          method:'Аргентометрическое титрование — метод Мора (SM 4500-Cl⁻ B)',
+          principle:'Нитрат серебра (AgNO₃) осаждает Cl⁻ как AgCl (белый, Ksp = 1,8×10⁻¹⁰). Хромат калия (K₂CrO₄) образует красный Ag₂CrO₄ только после осаждения всего Cl⁻ — фиксируя конечную точку.',
+          steps:[
+            'Довести pH 100 мл пробы до 7–10 (NaHCO₃ или H₂SO₄).',
+            'Добавить 1 мл K₂CrO₄ (50 г/л). Раствор желтеет.',
+            'Титровать 0,0141н AgNO₃ из тёмной бюретки (свет разрушает AgNO₃). Непрерывное перемешивание.',
+            'Конечная точка: стойкое кирпично-красное окрашивание. Зафиксировать V (мл).',
+            'Провести холостой опыт (дистиллированная вода + индикатор). Вычесть V_холостого.',
+            'Cl⁻ (мг/л) = (V − V_хол) × N × 35450 / V_пробы (мл).',
+          ],
+          reagents:['0,0141н AgNO₃ (стандартизация по NaCl)','K₂CrO₄ (50 г/л)','H₂SO₄ или NaHCO₃ для pH'],
+          note:'Альтернатива: метод нитрата ртути — точнее при низких концентрациях Cl⁻. ИХ — эталонный метод для одновременного определения анионов.',
+        }
+      },
+      NH4:{
+        name:'Аммоний NH₄⁺',
+        cause:'Аммоний — ключевой индикатор органического загрязнения. Источники: сточные воды и канализационные сбросы, сельскохозяйственный сток (удобрения — карбамид, аммиачная селитра), разложение органического вещества (белки → аминокислоты → NH₄⁺), анаэробный диагенез донных отложений. В озёрах выброс NH₄⁺ из анаэробного придонного слоя — основной механизм внутренней нагрузки.',
+        methods:['Хлорирование до точки перегиба','Биологическая нитрификация','Отдувка воздухом','Цеолитовый ионный обмен'],
+        steps:[
+          'Хлорирование до точки перегиба: Cl₂ в весовом соотношении 7,6:1 к NH₄⁺-N. Реакция: 2NH₄⁺ + 3Cl₂ → N₂↑ + 6HCl + 2H⁺. Контролировать образование тригалометанов.',
+          'Биологическая нитрификация: аэробные бактерии (Nitrosomonas, Nitrobacter). NH₄⁺ → NO₂⁻ → NO₃⁻. DO > 2 мг/л, pH 7–8, T > 10°C. ВРС > 10 суток.',
+          'Отдувка при высоком pH (10,5–11,5): Ca(OH)₂ → NH₄⁺ → NH₃(г) в насадочной колонне. Соотношение воздух:вода 300:1. Эффективность > 90% при T > 20°C.',
+          'Цеолитовый ионный обмен (клиноптилолит): ёмкость 10–20 мг NH₄⁺/г. Регенерация 1М NaCl + NaOH.',
+          'ПРИОРИТЕТ: выявить и устранить источник загрязнения.',
+        ],
+        lab:{
+          method:'Нессеризация (фотоколориметрический) или фенольный метод (SM 4500-NH₃)',
+          principle:'Реактив Несслера (K₂[HgI₄] в KOH) реагирует с NH₄⁺ с образованием жёлто-коричневого коллоидного комплекса. Оптическая плотность при 425 нм пропорциональна концентрации NH₄⁺. Фенольный метод: NH₄⁺ + гипохлорит + фенол → индофенольный синий (640 нм) — более чувствительный.',
+          steps:[
+            'Дистилляция при мутности/окраске: MgO → отгон в приёмник с H₃BO₃ (25 мл 2%).',
+            'Нессеризация: 50 мл пробы/дистиллята, добавить 1 мл ЭДТА (50 г/л) для маскировки Ca²⁺/Mg²⁺.',
+            'Добавить 2 мл реактива Несслера. Немедленно перемешать.',
+            'Выдержать 10 мин. Измерить при 425 нм vs реагентный холостой.',
+            'Калибровка: 0; 0,05; 0,1; 0,2; 0,4; 0,8; 1,0 мг/л NH₄⁺-N из NH₄Cl (100 мг/л).',
+            'NH₄⁺ (мг/л) = C из графика × 1,288.',
+          ],
+          reagents:['Реактив Несслера (ТОКСИЧЕН — обращаться осторожно)','ЭДТА динатриевая (50 г/л)','Стандарт NH₄Cl (обезвоженный, 105°C)','Для фенольного: фенат натрия, NaOCl, нитропруссид натрия'],
+          note:'Реактив Несслера содержит ртуть — утилизировать как опасные отходы. Фенольный метод предпочтителен. ИСЭ для полевых измерений (±10%).',
+        }
+      },
+      NO3:{
+        name:'Нитраты NO₃⁻',
+        cause:'Загрязнение нитратами имеет преимущественно антропогенный характер: вымывание азотных удобрений (NH₄NO₃, карбамид, KNO₃), животноводческие стоки, стоки городских сточных вод (неполное денитрифицирование), атмосферные осадки. Нитраты сохраняются в подземных водах десятилетиями. Риск: метгемоглобинемия у детей до 6 месяцев при > 10 мг/л NO₃⁻-N.',
+        methods:['Биологическое денитрифицирование','Ионный обмен','Обратный осмос','Каталитическое восстановление','Электродиализ'],
+        steps:[
+          'Биологическое денитрифицирование: гетеротрофные бактерии (Pseudomonas, Paracoccus) в аноксических условиях. Источник углерода: метанол (2,5 мг на 1 мг NO₃⁻-N). HRT 1–3 ч. Продукт — N₂↑.',
+          'Ионный обмен: сильноосновной анионит, селективный к NO₃⁻ (Amberlite IRA-996). Обмен NO₃⁻ на Cl⁻. Регенерация 4% NaCl.',
+          'Обратный осмос: 85–95% удаления NO₃⁻. Концентрат требует утилизации.',
+          'Каталитическое восстановление: Pd-Cu катализатор + H₂ → NO₃⁻ → NO₂⁻ → NH₄⁺ → N₂. Лабораторный масштаб доказан.',
+          'Контроль источника: точное внесение удобрений, защитные полосы вдоль водоёмов.',
+        ],
+        lab:{
+          method:'УФ-спектрофотометрия (SM 4500-NO₃⁻ B) или кадмиевое восстановление (SM 4500-NO₃⁻ E)',
+          principle:'УФ метод: NO₃⁻ поглощает УФ при 220 нм. Органика также поглощает при 220 нм — коррекция по 275 нм. Кадмиевый метод: NO₃⁻ восстанавливается до NO₂⁻ на кадмиевой колонне, затем NO₂⁻ определяется диазотированием (розово-красный при 543 нм).',
+          steps:[
+            'УФ метод: фильтровать 0,45 мкм. Подкислить до pH 2–3 (1 мл 1н HCl на 100 мл).',
+            'Измерить при 220 нм и 275 нм (кювета кварцевая 1 см).',
+            'Скорректированная A = A₂₂₀ − 2×A₂₇₅.',
+            'Градуировка: 0–7 мг/л NO₃⁻-N из KNO₃.',
+            'Кадмиевый метод: активированная Cu-Cd колонна (Cu-плакированные зёрна Cd).',
+            'Пропустить 25 мл буферной пробы через колонну при 7–10 мл/мин.',
+            'Добавить сульфаниламид + NEDA. Измерить при 543 нм.',
+          ],
+          reagents:['HCl (1н)','Стандарт KNO₃ (высушен 105°C, 100 мг N/л)','Сульфаниламид','NEDA (N-(1-нафтил)этилендиамин)','Cu-активированные Cd-зёрна'],
+          note:'Кадмий токсичен — колонну и отходы утилизировать как опасные. ИХ — эталонный метод. УФ метод — помехи от органики и ПАВ.',
+        }
+      },
+      NO2:{
+        name:'Нитриты NO₂⁻',
+        cause:'Нитриты — нестабильный промежуточный продукт цикла азота. Высокие концентрации указывают на: (1) неполную нитрификацию при дефиците кислорода; (2) остановку денитрифицирования на стадии NO₂⁻; (3) недавнее органическое загрязнение. Нитриты остро токсичны — окисляют гемоглобин до метгемоглобина.',
+        methods:['Хлорирование','Озонирование','Биологическая нитрификация','Окисление KMnO₄','Аэрация'],
+        steps:[
+          'Хлорирование: Cl₂ → NO₂⁻ → NO₃⁻. Доза: 5 мг Cl₂/мг NO₂⁻-N. Мгновенная реакция.',
+          'Озонирование: O₃ при 2–4 мг/л, 5–10 мин. Дополнительно обеззараживает и удаляет микрозагрязнители.',
+          'KMnO₄: 1 мг KMnO₄/мг NO₂⁻-N. Экстренный окислитель. Фильтрация MnO₂ после обработки.',
+          'Полная нитрификация: DO > 3 мг/л, ВРС > 15 сут, pH 7–8.',
+          'Установить источник: скачок нитритов — признак недавнего загрязнения.',
+        ],
+        lab:{
+          method:'Диазотирование-сочетание (SM 4500-NO₂⁻ B) — Фотоколориметрический',
+          principle:'В кислой среде NO₂⁻ реагирует с сульфаниламидом с образованием соли диазония, которая сочетается с NEDA с образованием розово-красного азокрасителя. Оптическая плотность при 543 нм пропорциональна концентрации NO₂⁻. Предел обнаружения 0,001 мг/л.',
+          steps:[
+            'Фильтровать 0,45 мкм сразу после отбора. Анализировать в течение 24 ч (хранить при 4°C).',
+            '50 мл пробы в колбу при 15–25°C.',
+            'Добавить 1 мл сульфаниламида (10 г в 100 мл 30% H₃PO₄). Перемешать, выдержать 2–8 мин.',
+            'Добавить 1 мл NEDA (1 г/л). Перемешать немедленно.',
+            'Выдержать 10 мин. Измерить при 543 нм vs реагентный холостой.',
+            'Калибровка: 0; 0,002; 0,01; 0,05; 0,1; 0,2; 0,5 мг/л NO₂⁻-N из NaNO₂.',
+            'NO₂⁻ (мг/л) = C (мг/л N) × 3,285.',
+          ],
+          reagents:['Сульфаниламид ч.д.а.','NEDA (1 г/л)','H₃PO₄ (85%)','Стандарт NaNO₂ (свежий, 100 мг/л)'],
+          note:'КРИТИЧНО: пробы брать на лёд, анализировать в день отбора. Реактив NEDA хранить в темноте при 4°C, заменять ежемесячно.',
+        }
+      },
+      PO4:{
+        name:'Фосфаты PO₄³⁻',
+        cause:'Фосфат — основной триггер эвтрофикации. Источники: синтетические моющие средства (триполифосфат натрия), сельскохозяйственные удобрения (суперфосфат), сточные воды (3–4 мг P/чел/сут), промышленные стоки (пищевая промышленность, удобрения), выветривание апатита. В стратифицированных озёрах анаэробные придонные условия вызывают выброс фосфатов из донных отложений (внутренняя нагрузка) — ключевой механизм поддержания эвтрофикации.',
+        methods:['Осаждение FeCl₃/квасцами','Известковое осаждение','Биологическое (EBPR)','Построенные водно-болотные угодья','Обработка озера квасцами'],
+        steps:[
+          'Осаждение железом: FeCl₃, молярное соотношение Fe:P = 1,5–2,5:1. Fe³⁺ + PO₄³⁻ → FePO₄↓. Оптимальный pH 5–6. Снижает PO₄³⁻ до < 0,1 мг/л.',
+          'Коагуляция алюминием: Al₂(SO₄)₃ (квасцы), соотношение Al:P = 2–4:1. AlPO₄ осаждается (Ksp = 9,8×10⁻²¹). pH 6–7.',
+          'Известковое осаждение: Ca(OH)₂ до pH > 9,5 → гидроксиапатит Ca₅(PO₄)₃OH. Эффективен при концентрациях > 10 мг/л.',
+          'EBPR: чередование анаэробной и аэробной зон в активном иле. PAO-бактерии накапливают P (до 20% сухой массы). Итог < 0,5 мг/л общего P.',
+          'Обработка озера квасцами: 50–200 г Al/м² площади водной поверхности. Эффект 5–15 лет.',
+          'Макрофиты: Phragmites, Typha — 0,5–2 г P/м²/год. Обязательна уборка биомассы.',
+        ],
+        lab:{
+          method:'Аскорбиновая кислота — молибденовая синь (SM 4500-P E)',
+          principle:'В кислой среде ортофосфат реагирует с молибдатом аммония и тартратом сурьмы с образованием фосфомолибденовой кислоты, восстанавливаемой аскорбиновой кислотой до интенсивно синего молибденового синего. Оптическая плотность при 880 нм пропорциональна концентрации PO₄³⁻. Предел обнаружения 0,01 мг/л.',
+          steps:[
+            'Немедленно фильтровать 0,45 мкм. Хранить при pH < 2 (H₂SO₄) до 48 ч.',
+            '50 мл пробы в колбу. pH 3,0–3,5 в ходе развития окраски.',
+            'Добавить 0,05 мл 5н H₂SO₄.',
+            'Добавить 8 мл смешанного реагента (порядок: 50 мл 5н H₂SO₄ + 5 мл тартрата сурьмы 0,14% + 15 мл молибдата 4% + 30 мл аскорбиновой 1,76% — готовить свежим).',
+            'Перемешать. Выдержать 10 мин при 20–25°C. Измерить при 880 нм vs реагентный холостой.',
+            'Калибровка: 0; 0,05; 0,1; 0,2; 0,5; 1,0; 1,3 мг/л из KH₂PO₄.',
+            'Общий P: автоклавирование с K₂S₂O₈ + H₂SO₄ при 121°C, 30 мин перед определением.',
+          ],
+          reagents:['Молибдат аммония ((NH₄)₆Mo₇O₂₄·4H₂O, 40 г/л)','Тартрат сурьмы (1,4 г/л)','Аскорбиновая кислота (17,6 г/л, свежая)','5н H₂SO₄','KH₂PO₄ (стандарт, высушен 105°C)'],
+          note:'Смешанный реагент готовить в указанном порядке — иначе синеет немедленно. Кремний и арсенат мешают при высоких концентрациях. Мутность: центрифугировать перед измерением.',
+        }
+      },
+      DO:{
+        name:'Растворённый кислород O₂',
+        cause:'Дефицит растворённого кислорода (DO) возникает, когда потребление кислорода (биохимическое разложение органики, химическое окисление, кислородный запрос донных отложений) превышает реаэрацию из атмосферы и фотосинтез. Факторы: высокая органическая нагрузка, повышенная температура (при 25°C насыщение 8,3 мг/л vs 14,6 мг/л при 0°C), эвтрофикация, термическая стратификация, застойные условия. При DO < 4 мг/л — стресс рыбы; < 2 мг/л — замор.',
+        methods:['Поверхностная аэрация','Диффузная аэрация','Инжекция O₂','Дестратификация','Снижение органической нагрузки'],
+        steps:[
+          'Поверхностные аэраторы: стандартная эффективность 1–3 кг O₂/кВт·ч. Один аэратор на 1000–5000 м² поверхности. Эффективны для мелководья (< 3 м). Целевое значение DO > 5 мг/л.',
+          'Мелкопузырьковая аэрация: мембранные диффузоры, пузырьки 1–3 мм. Эффективность 2–4 кг O₂/кВт·ч. Расставлять через 1–2 м по дну.',
+          'Инжекция чистого кислорода (гиполимнетическая): жидкий O₂ через диффузор в придонный слой. Не нарушает термоклин. Целевое DO > 4 мг/л у дна.',
+          'Дестратификация: циркуляционные насосы (1–2 кВт/10000 м³) или воздушные завесы. Внимание: в эвтрофных озёрах может спровоцировать цветение водорослей.',
+          'Снижение органической нагрузки: устранение сточных сбросов, строительство водно-болотных угодий. Долгосрочное решение — механическая аэрация симптоматична.',
+        ],
+        lab:{
+          method:'Метод Винклера (SM 4500-O B) или мембранный электрод (SM 4500-O G)',
+          principle:'Метод Винклера: в щелочных условиях O₂ окисляет Mn²⁺ → MnO₂ (бурый осадок). Подкисление освобождает I₂ из KI (MnO₂ + 2KI + H₂SO₄ → Mn²⁺ + I₂), I₂ титруется тиосульфатом натрия. 1 моль O₂ ≡ 4 моль Na₂S₂O₃. Эталонный метод для калибровки электродов.',
+          steps:[
+            'КРИТИЧНО: отбор пробы — заполнить БПК-склянку 300 мл до краёв, без пузырей. Реактивы — немедленно на месте.',
+            'Добавить 1 мл MnSO₄ (36 г/100 мл) ниже поверхности.',
+            'Добавить 1 мл щелочного KI–NaN₃ (50 г NaOH + 15 г KI + 1 г NaN₃/100 мл) ниже поверхности. Закрыть.',
+            'Перемешать 20 переворачиваний. Выдержать до выпадения 1/3 осадка.',
+            'Добавить 1 мл конц. H₂SO₄. Растворить осадок — раствор желтеет (I₂).',
+            'Перенести 203 мл в колбу. Титровать 0,025М Na₂S₂O₃ до бледно-жёлтого, добавить 0,5 мл крахмала, до бесцветного.',
+            'DO (мг/л) ≈ V(мл) × 0,2 (для 0,025М Na₂S₂O₃, 203 мл пробы).',
+            'Электродный метод: калибровка в насыщенной воде (100%) и Na₂SO₃ (0%). Измерение in situ на глубине с записью температуры.',
+          ],
+          reagents:['MnSO₄·H₂O (36 г/100 мл)','Щелочной KI–NaN₃','Конц. H₂SO₄','0,025М Na₂S₂O₃ (стандартизация по K₂Cr₂O₇)','Крахмал (1%, свежий)'],
+          note:'Метод Винклера чувствителен к Fe²⁺/Fe³⁺, NO₂⁻ (использовать азидную модификацию), остаточному Cl₂. Электродный метод: мембрана чистая, электролит свежий. Калибровать ежедневно.',
+        }
+      },
+      pH:{
+        name:'pH',
+        cause:'pH вне диапазона 6,5–8,5 нарушает химию и биологию водного объекта. Кислая среда: кислотные дожди (H₂SO₄, HNO₃ из выбросов SO₂/NOₓ), кислотный дренаж горных пород (окисление пирита), обогащение CO₂ от дыхания/разложения. Щелочная среда: фотосинтез водорослей (поглощение CO₂, pH может достигать 10+), промышленные щелочные сбросы (кожевенные, бумажные комбинаты), растворение карбонатных минералов. pH контролирует растворимость металлов (Al, Mn, Fe при низком pH), соотношение NH₄⁺/NH₃ и эффективность хлорирования.',
+        methods:['Известкование (низкий pH)','Инжекция CO₂ (высокий pH)','Кальцинированная сода','Кислотование','Известняковые каналы'],
+        steps:[
+          'Низкий pH — нейтрализация известью: Ca(OH)₂ суспензия (известковое молоко, 5–10%). Доза из кривой кислотного титрования. Целевой pH 7,5–8,0.',
+          'Низкий pH — CaCO₃ фильтры: дроблёный известняк (> 98% CaCO₃). Самоограничивающееся растворение при pH 6,5–7,0. Без химикатов.',
+          'Низкий pH — кальцинированная сода Na₂CO₃: 10% раствор. Более растворима, точнее регулирует pH.',
+          'Высокий pH — инжекция CO₂: 1–5 г CO₂/м³. CO₂ + H₂O → H₂CO₃ → H⁺ + HCO₃⁻. Без химических остатков. Автоматическое регулирование.',
+          'Высокий pH — дозирование H₂SO₄: 10–20% раствор через дозирующий насос. Дёшево, требует мер безопасности.',
+          'Анаэробный известняковый дренаж (ALD): для хронического кислотного дренажа горных пород. Известняк в анаэробных условиях. Поднимает pH с 3–4 до 6–7.',
+        ],
+        lab:{
+          method:'Электрометрический метод — стеклянный электрод (SM 4500-H⁺ B) — Эталонный',
+          principle:'Стеклянный электрод генерирует электрохимический потенциал (мВ), пропорциональный активности H⁺ по уравнению Нернста: E = E₀ + (RT/nF)×ln[H⁺]. Наклон: −59,16 мВ/единица pH при 25°C. Электрод сравнения (Ag/AgCl в KCl) обеспечивает стабильный потенциал полуэлемента.',
+          steps:[
+            'Калибровать pH-метр по двум буферным растворам, охватывающим ожидаемый диапазон пробы. Проверить наклон: 95–105% (−56 до −62 мВ/pH).',
+            'Ополоснуть электрод дистиллированной водой, промокнуть. Не протирать (статическое электричество).',
+            'Погрузить электрод в пробу. Перемешивать медленно. Зафиксировать pH и температуру.',
+            'Полевые измерения: портативный pH-метр с АТК (автоматическая термокомпенсация). Калибровать перед каждым выездом.',
+            'Малая проводимость (< 100 мкСм/см): специальные малоионосильные буферы.',
+            'pH измерять на месте или в течение 15 мин — обмен CO₂ и окислительно-восстановительные реакции быстро изменяют pH.',
+            'КК/КА: третий буфер как проверочный — должен давать ±0,05 ед. pH.',
+          ],
+          reagents:['NIST буфер pH 4,00 (гидрофталат калия, 0,05М)','NIST буфер pH 7,00 (фосфатный)','NIST буфер pH 10,01 (карбонат/бикарбонат)','KCl (3М или насыщенный) для электрода сравнения'],
+          note:'Электрод кондиционировать 30 мин в буфере pH 4 или 7 перед работой. Хранить в KCl, не в дистиллированной воде. Заменять при наклоне < 90% или времени отклика > 60 с.',
+        }
+      }
+    }
+  },
+
+  az:{
+    title:'🔧 Təmizləmə Tövsiyələri',
+    noIssues:'✅ Təmizləmə tələb olunmur — bütün göstəricilər normadadır.',
+    tabs:['⚠️ Səbəb','🔧 Təmizləmə','🔬 Lab. analiz'],
+    params:{
+      SO4:{
+        name:'Sulfatlar SO₄²⁻',
+        cause:'Yüksək sulfat konsentrasiyası gips (CaSO₄·2H₂O) və anhidritin həllindən, sənaye tullantılarından (metallurgiya, kimya zavodları, mədənçilik), turşu yağıntılarından (SO₂ → SO₄²⁻) və ya torpaq/çöküntülərdə piritin (FeS₂) oksidləşməsindən qaynaqlanır.',
+        methods:['Tərs osmoz','İon mübadiləsi','Nanofiltrasiya','Elektrodializ','BaSO₄ çökdürməsi'],
+        steps:[
+          'Tərs osmoz (RO): 5–15 bar təzyiqdə yarımkeçirici membranlar — sulfatların 99%-ə qədərini çıxarır.',
+          'İon mübadiləsi: güclü əsas anion qatranı (Amberlite IRA-400). SO₄²⁻ → Cl⁻ və ya OH⁻. 4–8% NaCl ilə regenerasiya.',
+          'Nanofiltrasiya: MWCO 200–400 Da membranlar, 4–8 bar, 80–95% tutma.',
+          'Elektrodializ inversiyası (EDR): elektrik sahəsi SO₄²⁻-ü anionselektiv membranlardan keçirir.',
+          'BaSO₄ çökdürməsi: BaCl₂, doza 2,09 mq/mq SO₄²⁻. Artıq Ba²⁺ toksikdir — yoxlanılmalıdır.',
+          'Təbii su hövzələri: sənaye tullantılarını nəzarətdə saxlayın, piritli sahillərin eroziyasını azaldın.',
+        ],
+        lab:{
+          method:'Turbidimetrik üsul (SM 4500-SO₄²⁻ E) / Gravimetrik (BaSO₄)',
+          principle:'Sulfat ionları turşu mühitdə BaCl₂ ilə çəkilərək BaSO₄ suspenziyası əmələ gətirir. Turbidimetrik üsul işığın sərpilməsini ölçür; gravimetrik üsul qurudulmuş çökünütnü çəkir.',
+          steps:[
+            '100 ml filtrlənmiş nümunə. HCl ilə pH 4,0–4,5-ə gəltirilir.',
+            '20 ml kondisiyalaşdırıcı məhlul əlavə edilir (gliserin + HCl + etanol + NaCl).',
+            'Qarışdırarkən dəqiq 0,3 q BaCl₂·2H₂O kristalı əlavə edilir. 60 saniyə qarışdırılır.',
+            'Küvetə köçürülür. 3–5 dəqiqə ərzində 420 nm-də absorbsiya ölçülür.',
+            'Kalibrasiya: 0, 5, 10, 20, 40, 80 mq/l SO₄²⁻.',
+            'Qravimetrik variant: şüşə-lifli filtrdən keçirilir, 105°C-də 2 saat qurudulur, çəkilir.',
+          ],
+          reagents:['BaCl₂·2H₂O','HCl (1:1)','Kondisiyalaşdırıcı məhlul','SO₄²⁻ standartı (K₂SO₄, 1000 mq/l)'],
+          note:'İon xromatoqrafiyası (İX) ən dəqiq üsuldur. SO₄²⁻, Cl⁻, NO₃⁻ eyni qaçışda təyin edilir. Aşkarlama həddi ~0,1 mq/l.',
+        }
+      },
+      CO3:{
+        name:'Karbonatlar CO₃²⁻',
+        cause:'Yüksəlmiş karbonatlar güclü qələvi şəraiti (pH > 8,3) göstərir. Mənbələr: kalsit və dolomitin yüksək pH-da həlli, geothermal daxilolmalar, sənaye qələvi tullantıları, yosunların fotosintezi zamanı CO₂-nin istehlakı ilə karbonat tarazlığının CO₃²⁻ tərəfə sürüşməsi.',
+        methods:['CO₂ ilə turşulaşdırma','Əhəng-soda yumşaltma','Katyon mübadiləsi','Turşu dozalaması'],
+        steps:[
+          'CO₂ turşulaşdırma: 0,5–2 kq/m³ CO₂ vurulması CO₃²⁻ → HCO₃⁻ çevirməsini həyata keçirir. Hədəf pH 7,0–8,0.',
+          'Əhəng-soda yumşaltma: Ca(OH)₂ → CaCO₃ çöküntüsü. Sərtliklə birlikdə azaldılır.',
+          'H⁺-formlu güclü turşu kation qatranı: Ca²⁺/Mg²⁺ mübadiləsi. H₂SO₄ ilə regenerasiya.',
+          'Turşu dozalaması: pH 8,3-ə endirilməsi CO₃²⁻-i tamamilə HCO₃⁻-ə çevirir.',
+          'Göllər üçün: yosun çiçəklənməsinin azaldılması (fosfat nəzarəti).',
+        ],
+        lab:{
+          method:'Potensiyometrik titrləmə (SM 2320 B)',
+          principle:'Karbonat qələviliyi standart turşu (H₂SO₄) ilə pH 8,3 son nöqtəsinə (CO₃²⁻ → HCO₃⁻), sonra pH 4,5-ə (HCO₃⁻ → H₂CO₃) titrləməklə təyin edilir.',
+          steps:[
+            '250 ml konus kolbada 100 ml süzülməmiş nümunə. Silkələmə yox.',
+            '3 damla fenolftalein. Çəhrayı → karbonat var.',
+            '0,02N H₂SO₄ ilə rəngsizləşənə titrləmə (pH 8,3). V₁ qeyd edilir.',
+            'Bromkrezol yaşılı/metil qırmızısı əlavə edilir.',
+            'pH 4,5-ə titrləmə davam etdirilir. V₂ qeyd edilir.',
+            'CO₃²⁻ (mq/l) = V₁ × N × 60000 / V nümunə.',
+          ],
+          reagents:['0,02N H₂SO₄','Fenolftalein (1%)','Bromkrezol yaşılı/metil qırmızısı','CO₂-siz distillə suyu'],
+          note:'Nümunələr 24 saat ərzində analiz edilməlidir. Titrləmədən əvvəl filtrləmə aparılmaz. 4°C-də saxlanılır.',
+        }
+      },
+      HCO3:{
+        name:'Bikarbonatlar HCO₃⁻',
+        cause:'Bikarbonatlar əksər təbii sularda dominant qələvilik formasıdır. Yüksək konsentrasiyalar suda CO₂-nin həllindən (CO₂ + H₂O → HCO₃⁻), karbonat minerallarının aşınmasından, əhəng daşı akviferllərindəki uzun yeraltı su müddətindən və üzvi maddənin parçalanmasından CO₂ ayrılmasından qaynaqlanır.',
+        methods:['Havalandırma','Əhəng yumşaltma','Turşu neytralizasiyası','Tərs osmoz'],
+        steps:[
+          'Havalandırma: doldurucu qüllələr vasitəsilə — CO₂ qaçır, HCO₃⁻ 20–40% azalır. Kimyəvisiz.',
+          'Əhəng yumşaltma: Ca(OH)₂, 1 meq/meq HCO₃⁻. CaCO₃ çöküntüsü. Sərtlik + bikarbonat azaldılır.',
+          'Turşu neytralizasiyası: pH 4,3-ə endirilməsi → bütün HCO₃⁻ → H₂CO₃ → CO₂ havalandırma ilə çıxarılır.',
+          'Tərs osmoz: 95–98% HCO₃⁻ çıxarılması.',
+          'Suvarma suyu: az bikarbonatlu mənbə ilə qarışdırma və ya sulfat turşusu ineksiyası.',
+        ],
+        lab:{
+          method:'pH 4,5-ə potensiyometrik titrləmə (SM 2320 B)',
+          principle:'Bikarbonat qələviliyi standartlaşdırılmış sulfat turşusu ilə pH 4,5 son nöqtəsinə titrləməklə təyin edilir.',
+          steps:[
+            '200 ml nümunə hava ilə təmasız toplanır. 6 saat ərzində analiz edilir.',
+            '100 ml stəkana tökülür. Kalibrə edilmiş pH elektrodu daxil edilir.',
+            '0,02N H₂SO₄ mikrobüretdən titrləmə, pH ≈ 4,5 yaxınlaşanda damcı-damcı.',
+            'V (ml) pH 4,5-ə çatanda qeyd edilir.',
+            'HCO₃⁻ (mq/l) = V × N × 61000 / V nümunə.',
+          ],
+          reagents:['0,02N H₂SO₄','pH-metr termokompensasiyalı','Maqnit qarışdırıcı'],
+          note:'6 saatdan çox açıq qalmış nümunələr istifadə edilməz. 4°C-də saxlanılır, eyni gün analiz edilir.',
+        }
+      },
+      hardness:{
+        name:'Ümumi sərtlik',
+        cause:'Ümumi sərtlik ərimiş Ca²⁺ və Mg²⁺ ionlarını əks etdirir. Mənbələr: əhəng daşı (CaCO₃), dolomit (CaMg(CO₃)₂), gips (CaSO₄) həlli. Digya gölü tipli dəyərlər (11–14 meq/l) evaporitik geologiyaya malik yarımsəhra əraziləri üçün xarakterikdir.',
+        methods:['İon mübadilə yumşaltması','Əhəng-soda prosesi','Nanofiltrasiya','Tərs osmoz'],
+        steps:[
+          'İon mübadilə yumşaltması: Na⁺-kation qatranı. 10% NaCl ilə regenerasiya. Çıxışda sərtlik < 0,5 meq/l.',
+          'Əhəng-soda prosesi: Ca(OH)₂ → CaCO₃↓; Na₂CO₃ → qeyri-karbonat sərtliyi. Mg²⁺ üçün artıq Ca(OH)₂ → Mg(OH)₂↓.',
+          'Digya gölü şəraiti (11–14 meq/l): iki mərhələ — əhəng yumşaltma (60% azalma) + ion mübadilə cilalanması.',
+          'Nanofiltrasiya: Ca²⁺/Mg²⁺ 80–90% tutma, 4–8 bar.',
+          'Tərs osmoz: 95–99% uzaqlaşdırma.',
+        ],
+        lab:{
+          method:'EDTA titrimetrik üsul (SM 2340 C)',
+          principle:'EDTA pH 10-da Ca²⁺ və Mg²⁺ ilə stabil xelat kompleksləri əmələ gətirir. Erixrom Qara T (EQT) indikatoru metallarla tünd qırmızı kompleks verir — EDTA son nöqtəsini göy rəngə keçid ilə göstərir.',
+          steps:[
+            '250 ml konus kolbada 25 ml nümunə.',
+            'pH 10 ammonium buferi 1–2 ml əlavə edilir.',
+            'EQT indikatoru 1–2 damcı. Şərab qırmızısı/çəhrayı rəng.',
+            '0,01M EDTA ilə titrləmə. Daimi fırlatma ilə damcı-damcı.',
+            'Son nöqtə: şərab qırmızısı → saf göy. V (ml) qeyd edilir.',
+            'Sərtlik (meq/l) = V × M_EDTA × 2 × 1000 / V nümunə.',
+            'Ayrıca Ca²⁺: pH 12–13, mureksid indikatoru. Mg²⁺ = ümumi − Ca²⁺.',
+          ],
+          reagents:['0,01M EDTA (Na₂C₁₀H₁₄N₂O₈·2H₂O, 80°C-də qurudulmuş)','pH 10 ammonium buferi','EQT indikatoru','Mureksid (Ca²⁺ üçün)','İnhibitor (Fe/Mn interferensiyası varsa)'],
+          note:'Fe³⁺, Mn²⁺, Cu²⁺ interferensiya edir — Na₂S inhibitoru əlavə edin.',
+        }
+      },
+      Cl:{
+        name:'Xloridlər Cl⁻',
+        cause:'Xlorid artıqlığı dəniz suyu girişini, sənaye duzlu su tullantısını (neft sahələri, kimya müəssisələri), yol toz-duzunun axıntısını (NaCl, CaCl₂) göstərir. Abşeron yarımadası kimi arid sahil bölgələrində xlorid artıqlığı evaporitik prosesləri və Xəzər dənizinin təsirini əks etdirir.',
+        methods:['Tərs osmoz','Elektrodializ','Distillasiya','Qarışdırma','Nanofiltrasiya'],
+        steps:[
+          'Tərs osmoz: 95–99% Cl⁻ çıxarılması. Cl⁻ > 500 mq/l olduqda içməli su üçün tələb olunur.',
+          'Elektrodializ inversiyası: DC elektrik sahəsi Cl⁻-ü anionselektiv membranlardan keçirir. Orta minerallaşma üçün (500–5000 mq/l).',
+          'Distillasiya: buxarlaşma-kondensasiya — bütün ionlar çıxarılır.',
+          'Qarışdırma: C_q = (C₁V₁ + C₂V₂)/(V₁+V₂). Təmiz mənbə mövcud olduqda sadə.',
+          'Mənbə nəzarəti: dəniz suyu girişindən çirklənmə — hidravlik baryerlər (ineksiya quyuları).',
+        ],
+        lab:{
+          method:'Arqentometrik titrləmə — Mor üsulu (SM 4500-Cl⁻ B)',
+          principle:'AgNO₃ Cl⁻-i AgCl kimi çökdürür (ağ, Ksp = 1,8×10⁻¹⁰). K₂CrO₄ indikatoru yalnız bütün Cl⁻ çökdükdən sonra qırmızı Ag₂CrO₄ əmələ gətirir.',
+          steps:[
+            '100 ml nümunə pH 7–10-a gətirilir.',
+            '1 ml K₂CrO₄ (50 q/l) əlavə edilir. Sarı rəng.',
+            'Qaranlıq büretdən 0,0141N AgNO₃ ilə titrləmə. Daimi qarışdırma.',
+            'Son nöqtə: davamlı kərpic-qırmızı rəng. V (ml) qeyd edilir.',
+            'Aydın nümunə (distillə suyu + indikator) aparılır, V_a çıxılır.',
+            'Cl⁻ (mq/l) = (V − V_a) × N × 35450 / V nümunə.',
+          ],
+          reagents:['0,0141N AgNO₃ (NaCl ilə standartlaşdırılmış)','K₂CrO₄ (50 q/l)','H₂SO₄ və ya NaHCO₃'],
+          note:'Alternativ: civə nitrat üsulu — aşağı Cl⁻ dəyərlərində daha dəqiqdir. İon xromatoqrafiyası çoxlu anion analizi üçün qızıl standartdır.',
+        }
+      },
+      NH4:{
+        name:'Ammonium NH₄⁺',
+        cause:'Ammonium üzvi çirklənmənin əsas göstəricisidir. Mənbələr: tullantı suları və kanalizasiya axıntıları, kənd təsərrüfatı axıntısı (gübrələr — karbamid, ammonium nitrat), üzvi maddənin parçalanması (zülallar → amin turşuları → NH₄⁺), anaerob çöküntü diagenezi. Göllər üzərindəki anaerob dib çöküntülərindən NH₄⁺ ayrılması daxili yük prosesinin əsas mexanizmidir.',
+        methods:['Qırılma nöqtəsinə xlorlama','Bioloji nitrifikasiya','Hava ilə çıxarma','Zeolit ion mübadiləsi'],
+        steps:[
+          'Qırılma nöqtəsinə xlorlama: 1 mq NH₄⁺-N-ə 7,6 mq Cl₂. THM əmələgəlməsi monitorinq edilməlidir.',
+          'Bioloji nitrifikasiya: DO > 2 mq/l, pH 7–8, T > 10°C. Çamurun saxlanma müddəti > 10 gün.',
+          'Hava ilə çıxarma pH > 10,5-də: Ca(OH)₂ ilə pH artırılır → NH₃ qazı ayrılır. Hava:su = 300:1.',
+          'Zeolit (klinoptilolit): 10–20 mq/q tutum. NaCl + NaOH ilə regenerasiya.',
+          'ÖNEMLİ: müalicədən əvvəl çirklənmə mənbəyi aradan qaldırılmalıdır.',
+        ],
+        lab:{
+          method:'Nesslerlama (kolorimetrik) və ya fenol üsulu (SM 4500-NH₃)',
+          principle:'Nesslerin reagenti (K₂[HgI₄] KOH-da) NH₄⁺ ilə sarı-qəhvəyi kolloid kompleks əmələ gətirir. 425 nm-də absorbsiya NH₄⁺ konsentrasiyasına mütənasibdir.',
+          steps:[
+            'Bulanıqlıq/rəng varsa distillasiya: MgO → H₃BO₃ qəbuledicisindəki distillat (25 ml 2% H₃BO₃).',
+            'Nesslerlama: 50 ml nümunə/distillat. 1 ml EDTA (50 q/l) əlavə edilir.',
+            '2 ml Nessler reagenti əlavə edilir. Dərhal qarışdırılır.',
+            '10 dəqiqə rəng inkubasiyası. 425 nm-də absorbsiya ölçülür.',
+            'Kalibrasiya: 0–1,0 mq/l NH₄⁺-N NH₄Cl standartından.',
+            'NH₄⁺ (mq/l) = C × 1,288.',
+          ],
+          reagents:['Nessler reagenti (ZƏHƏRLİ — ehtiyatla)','EDTA dinarium (50 q/l)','NH₄Cl standartı (susuz, 105°C)'],
+          note:'Nessler reagenti civə ehtiva edir — təhlükəli tullantı kimi utilizasiya edilir. Fenol üsulu müasir laboratoriyalarda üstün tutulur.',
+        }
+      },
+      NO3:{
+        name:'Nitratlar NO₃⁻',
+        cause:'Nitrat çirklənməsi əsasən antropogendir: azotlu gübrələrin (NH₄NO₃, karbamid, KNO₃) torpaqdan yuyulması, heyvan tullantıları, bələdiyyə tullantı suları (natamam denitrifikasiya), atmosfer çöküntüləri. Nitratlar onilliklər ərzində yeraltı sularda qalır. Risk: 6 aydan kiçik körpələrdə metgemoglobinemiya.',
+        methods:['Bioloji denitrifikasiya','İon mübadiləsi','Tərs osmoz','Katalitik reduksiya','Elektrodializ'],
+        steps:[
+          'Bioloji denitrifikasiya: anaerob bakteriyalar (Pseudomonas, Paracoccus) karbon mənbəyi kimi metanol istifadə edir. 2,5 mq metanol/mq NO₃⁻-N. HRT 1–3 saat.',
+          'İon mübadiləsi: NO₃⁻-selektiv anion qatranı (güclü əsas, Tip I). NaCl ilə regenerasiya.',
+          'Tərs osmoz: 85–95% NO₃⁻ çıxarılması.',
+          'Katalitik reduksiya: Pd-Cu katalizator + H₂ → NO₃⁻ → N₂. Laboratoriya miqyasında sübut olunmuşdur.',
+          'Mənbə nəzarəti: dəqiq gübrə tətbiqi, su hövzələri boyunca tampon zolaqlar.',
+        ],
+        lab:{
+          method:'UB spektrofotometriya (SM 4500-NO₃⁻ B) / kadmium reduksiyası (SM 4500-NO₃⁻ E)',
+          principle:'UB üsul: NO₃⁻ 220 nm-də UB şüasını udur. Üzvi maddə 220 nm-də müdaxilə edir — 275 nm-də korreksiya. Cd üsulu: NO₃⁻ → Cd kolonunda NO₂⁻-yə reduksiya → diazotlaşma ilə 543 nm-də ölçülür.',
+          steps:[
+            'UB üsul: 0,45 µm filtrdən keçirilir. pH 2–3 (HCl).',
+            '220 nm və 275 nm-də 1 sm kvars küvetdə ölçmə.',
+            'Düzəliş A = A₂₂₀ − 2×A₂₇₅.',
+            'Kalibrasiya: 0–7 mq/l NO₃⁻-N KNO₃-dan.',
+            'Cd üsulu: aktivləşdirilmiş Cu-Cd kolonu.',
+            '25 ml tamponlaşdırılmış nümunə kolona 7–10 ml/dəq keçirilir.',
+            'Sulfanilamid + NEDA. 543 nm-də ölçmə.',
+          ],
+          reagents:['HCl (1N)','KNO₃ standartı (105°C-də qurudulmuş)','Sulfanilamid','NEDA','Cu-aktivləşdirilmiş Cd dənələri'],
+          note:'Kadmium toksikdir — kolonu təhlükəli tullantı kimi utilizasiya et. İX müasir laboratoriyalarda üstündür.',
+        }
+      },
+      NO2:{
+        name:'Nitritlər NO₂⁻',
+        cause:'Nitritlər azot dövranının qeyri-sabit ara məhsuludur. Yüksək konsentrasiyalar göstərir: (1) oksigen çatışmazlığından yarımçıq nitrifikasiya; (2) NO₂⁻ mərhələsindəki bioloji denitrifikasiya; (3) son üzvi çirklənmə hadisəsi. Nitritlər həddən artıq toksikdir — hemoqlobini metahemoqlobinə oksidləşdirir.',
+        methods:['Xlorlama','Ozonlaşdırma','Bioloji nitrifikasiya','KMnO₄ oksidləşdirməsi','Havalandırma'],
+        steps:[
+          'Xlorlama: Cl₂ NO₂⁻-i NO₃⁻-ə oksidləşdirir. Doza: 5 mq Cl₂/mq NO₂⁻-N. Ani reaksiya.',
+          'Ozonlaşdırma: O₃ 2–4 mq/l, 5–10 dəqiqə kontakt. Patogenləri də inaktiv edir.',
+          'KMnO₄: 1 mq/mq NO₂⁻-N. Sonra MnO₂ çökünüt filtrlənir.',
+          'Tam bioloji nitrifikasiya: DO > 3 mq/l, SRT > 15 gün, pH 7–8.',
+          'Mənbə yoxla: NO₂⁻ artımı son çirklənmə hadisəsinə işarədir.',
+        ],
+        lab:{
+          method:'Diazotlaşma-birləşmə kolorimetrik üsulu (SM 4500-NO₂⁻ B)',
+          principle:'Turş mühitdə NO₂⁻ sulfanilamidlə diazonium duzu əmələ gətirir, NEDA ilə birləşərək qırmızı-çəhrayı azo boya verir. 543 nm-də absorbsiya NO₂⁻-yə mütənasibdir. Aşkarlama həddi 0,001 mq/l.',
+          steps:[
+            'Toplanır-toplanmaz 0,45 µm filtrlənir. 24 saat ərzində analiz (4°C-də saxla).',
+            '50 ml nümunə 15–25°C-də kolbaya.',
+            '1 ml sulfanilamid reagenti (10 q/100 ml 30% H₃PO₄). Qarışdır, 2–8 dəqiqə gözlə.',
+            '1 ml NEDA (1 q/l). Dərhal qarışdır.',
+            '10 dəqiqə rəng inkubasiyası. 543 nm-də ölçmə.',
+            'Kalibrasiya: 0–0,5 mq/l NO₂⁻-N NaNO₂-dən.',
+            'NO₂⁻ (mq/l) = N (mq/l) × 3,285.',
+          ],
+          reagents:['Sulfanilamid ç.d.a.','NEDA (1 q/l)','H₃PO₄ (85%)','NaNO₂ standartı (təzə, 100 mq/l)'],
+          note:'KRİTİK: nümunələr buzun üzərində saxlanılmalı, eyni gün analiz edilməlidir. NEDA reagenti qaranlıqda 4°C-də saxlanılır, aylıq dəyişdirilir.',
+        }
+      },
+      PO4:{
+        name:'Fosfatlar PO₄³⁻',
+        cause:'Fosfat evtrofikasiyanın əsas tetikləyicisidir. Mənbələr: sintetik yuyucu vasitələr, kənd təsərrüfatı gübrələri (superfosfat), tullantı suları (3–4 mq P/nəfər/gün), sənaye tullantıları, apatit minerallarının aşınması. Stratifikasiya olunmuş göllərde anaerob dib şəraiti çöküntülərdən fosfat ayrılmasına səbəb olur (daxili yük).',
+        methods:['FeCl₃/zəy çökdürməsi','Əhəng çökdürməsi','Bioloji (EBPR)','Qurulmuş subasar','Göldə zəy dozalaması'],
+        steps:[
+          'Dəmir çökdürməsi: FeCl₃, mol nisbəti Fe:P = 1,5–2,5:1. FePO₄ çöküntüsü. Optimal pH 5–6.',
+          'Alüminium koaqulyasiyası: Al₂(SO₄)₃ (zəy), nisbət Al:P = 2–4:1. AlPO₄ çöküntüsü. pH 6–7.',
+          'Əhəng çökdürməsi: Ca(OH)₂ → pH > 9,5 → hidroksiapatit Ca₅(PO₄)₃OH.',
+          'EBPR: aktivləşdirilmiş lildə anaerob-aerob dövr. PAO-bakteriyalar P toplayır (quru kütlənin 20%-ə qədər).',
+          'Göldə zəy dozalaması: 50–200 q Al/m². Effekt 5–15 il.',
+          'Qurulmuş subasar: Phragmites, Typha — 0,5–2 q P/m²/il. Biokütlənin yığılması məcburidir.',
+        ],
+        lab:{
+          method:'Askorbat turşusu üsulu — Molibden göyü (SM 4500-P E)',
+          principle:'Turş mühitdə ortofosfat ammonium molibdat və antimon kalium tartaratla fosfomolibdat turşusu əmələ gətirir, askorbat turşusu ilə intensiv mavi molibden göyünə endirilir. 880 nm-də absorbsiya PO₄³⁻-ə mütənasibdir. Aşkarlama həddi: 0,01 mq/l.',
+          steps:[
+            'Toplanır-toplanmaz 0,45 µm filtrlənir. pH < 2 (H₂SO₄) ilə saxlanılır, 48 saat.',
+            '50 ml nümunə kolbaya. pH 3,0–3,5.',
+            '0,05 ml 5N H₂SO₄.',
+            '8 ml qarışıq reagent (sıra ilə: H₂SO₄ + antimon tartarat + ammonium molibdat + askorbat — gündəlik hazırlanır).',
+            'Qarışdır. 20–25°C-də 10 dəqiqə inkubasiya. 880 nm-də ölçmə.',
+            'Kalibrasiya: 0–1,3 mq/l PO₄³⁻-P KH₂PO₄-dan.',
+            'Ümumi P: K₂S₂O₈ + H₂SO₄ avtoklavda 121°C, 30 dəqiqə diqestiyası.',
+          ],
+          reagents:['Ammonium molibdat (40 q/l)','Antimon kalium tartarat (1,4 q/l)','Askorbat turşusu (17,6 q/l, təzə)','5N H₂SO₄','KH₂PO₄ standartı (105°C-də qurudulmuş)'],
+          note:'Qarışıq reagent düzgün sırada hazırlanmalıdır — yanlış sıra dərhal mavi rəng verir. Silikat interferensiya edir. Bulanıqlıq: sentrifuqa.',
+        }
+      },
+      DO:{
+        name:'Həll olmuş O₂',
+        cause:'Həll olmuş oksigenin (DO) azalması oksigen istehlakının (üzvi maddənin bioloji parçalanması, kimyəvi oksidləşmə, dib çöküntüsünün oksigen tələbatı) atmosferdən reaerasiya və fotosintezdən üstün gəldiyi zaman baş verir. Əsas amillər: yüksək üzvi yük, yüksək temperatur (25°C-də doyma 8,3 mq/l vs 0°C-də 14,6 mq/l), evtrofikasiya, termal stratifikasiya.',
+        methods:['Səth havalandırma','Diffuz havalandırma','Xalis O₂ ineksiyası','Destratifikasiya','Üzvi yükü azalt'],
+        steps:[
+          'Səth havalandırıcıları: standart oksigen ötürülmə sürəti 1–3 kq O₂/kVt·saat. Bir aerator 1000–5000 m² su səthinə. Balıq üçün hədəf DO > 5 mq/l.',
+          'Xırda qabarcıq diffuz havalandırma: membran diffuzorlar, 1–3 mm qabarcıqlar. Effektivlik 2–4 kq O₂/kVt·saat. Dərin su üçün üstündür.',
+          'Xalis oksigen ineksiyası (hipolimnion): maye O₂ dib qatına diffuzor vasitəsilə. Termoklini pozmadan. Hədəf dib DO > 4 mq/l.',
+          'Destratifikasiya: şaquli qarışdırma nasosları (1–2 kVt/10000 m³). Diqqət: evtrofik göllər üçün yosun çiçəklənməsi riski qiymətləndirilməlidir.',
+          'Üzvi yükü azaldın: kanalizasiya tullantılarına nəzarət, qurulmuş subasar tikinlisi. Uzunmüddətli həll.',
+        ],
+        lab:{
+          method:'Winkler titrimetrik üsulu (SM 4500-O B) / Membran elektrodu (SM 4500-O G)',
+          principle:'Winkler: qələvi şəraitdə O₂, Mn²⁺-ni MnO₂-ə (qəhvəyi çöküntü) oksidləşdirir. Turşulaşdırma KI-dən I₂ azad edir, I₂ Na₂S₂O₃ ilə titrləmə. 1 mol O₂ ≡ 4 mol Na₂S₂O₃. Elektrod kalibrasiyası üçün istinad üsulu.',
+          steps:[
+            'KRİTİK: 300 ml BOD şüşəsi tullantısız doldurulur, hava qabarcığı olmadan. Reagentlər sahəde dərhal əlavə edilir.',
+            '1 ml MnSO₄ (36 q/100 ml) səthaltına əlavə edilir.',
+            '1 ml qələvi KI–NaN₃ (NaOH + KI + NaN₃) səthaltına əlavə edilir. Dərhal qapatılır.',
+            '20 dəfə çevrilir. Çöküntü 1/3 aşağı enənə qədər gözlənilir.',
+            '1 ml konsentrat H₂SO₄ əlavə edilir. Çöküntü həll olur — sarı rəng (I₂).',
+            '203 ml Erlenmeyer kolbasına köçürülür. 0,025M Na₂S₂O₃ ilə titrləmə solğun sarıya, 0,5 ml nişasta indikatoru, rəngsizliyə qədər.',
+            'DO (mq/l) ≈ V(ml) × 0,2.',
+          ],
+          reagents:['MnSO₄·H₂O (36 q/100 ml)','Qələvi KI–NaN₃','Konsentrat H₂SO₄','0,025M Na₂S₂O₃ (K₂Cr₂O₇ ilə standartlaşdırılmış)','Nişasta (1%, təzə)'],
+          note:'Winkler üsulu Fe²⁺/Fe³⁺, NO₂⁻ (azid modifikasiyası) və qalıq Cl₂-yə həssasdır. Elektrod üsulu: membran təmiz, elektrolit təzə olmalıdır. Hər gün kalibrə edilir.',
+        }
+      },
+      pH:{
+        name:'pH Səviyyəsi',
+        cause:'pH 6,5–8,5 xaricindəki dəyərlər su kimyasını və biologiyasını pozur. Aşağı pH: turşu yağışları (SO₂/NOₓ-dan H₂SO₄, HNO₃), turşu mədən drenajı (pirit oksidləşməsi), tənəffüs/parçalanmadan CO₂ artımı. Yüksək pH: yosunların fotosintezi (CO₂ istehlakı, pH 10+-ə çata bilər), sənaye qələvi tullantıları, karbonat minerallarının həlli.',
+        methods:['Əhəkləmə (aşağı pH)','CO₂ ineksiyası (yüksək pH)','Soda külü','Turşu dozalaması','Əhəng daşı kanalları'],
+        steps:[
+          'Aşağı pH — əhəng neytralizasiyası: Ca(OH)₂ suspenziyası (əhəng südü, 5–10%). Hədəf pH 7,5–8,0.',
+          'Aşağı pH — CaCO₃ filtri: üyüdülmüş əhəng daşı (>98% CaCO₃). Kimyəvisiz.',
+          'Aşağı pH — soda külü Na₂CO₃: 10% məhlul. Əhəngdən həll olur.',
+          'Yüksək pH — CO₂ ineksiyası: 1–5 q CO₂/m³. Kimyəvi qalıq yoxdur. Avtomatik tənzimləmə.',
+          'Yüksək pH — H₂SO₄ dozalaması: 10–20% məhlul. Effektiv, ehtiyat tədbirləri tələb olunur.',
+          'Anoksik əhəng daşı drenajı (ALD): xronik turşu mədən drenajı üçün. pH 3–4-dən 6–7-yə qaldırır.',
+        ],
+        lab:{
+          method:'Elektrometrik üsul — Şüşə elektrod (SM 4500-H⁺ B) — İstinad üsulu',
+          principle:'Şüşə elektrod Nernst tənliyinə əsasən H⁺ aktivliyinə mütənasib elektrokimyəvi potensial (mV) yaradır: E = E₀ + (RT/nF)×ln[H⁺]. Meyil: 25°C-də −59,16 mV/pH vahidi.',
+          steps:[
+            'pH-metr gözlənilən nümunə diapazonunu əhatə edən iki NIST tampon məhlulu ilə kalibrə edilir. Meyil: 95–105%.',
+            'Elektrod distillə suyu ilə yuyulur, yumşaq qurudulur. Silinmir.',
+            'Elektrod nümunəyə batırılır. Yavaş qarışdırılır. pH və temperatur qeyd edilir.',
+            'Sahə ölçmələri: ATC (avtomatik termokompensasiya) ilə portativ pH-metr. Hər nümunə götürmədən əvvəl kalibrə edilir.',
+            'Aşağı keçiricilik (< 100 µS/sm): xüsusi aşağı ion güclü tamponnlar.',
+            'pH sahədə və ya 15 dəqiqə ərzində ölçülür — CO₂ mübadiləsi tez dəyişir.',
+            'Keyfiyyət nəzarəti: üçüncü tampon ±0,05 pH vahidi daxilində ölçülməlidir.',
+          ],
+          reagents:['NIST pH 4,00 tampon (kalium hidroftaalat, 0,05M)','NIST pH 7,00 tampon (fosfat)','NIST pH 10,01 tampon (karbonat/bikarbonat)','KCl (3M) istinad elektrod doldurucu'],
+          note:'Elektrod ilk istifadədən əvvəl pH 4 və ya 7 tamponunda 30 dəq kondisiyalanır. KCl-də saxlanılır, distillə suyunda yox. Meyil < 90% olduqda dəyişdirilir.',
+        }
+      }
+    }
+  }
+};
+
+// ── translations ──────────────────────────────────────────────────────────────
 const T = {
-  en: {
-    badge:'💧 Digital Environmental Tool',
-    subtitle:'Digital Water Analyser · Based on WHO & EU Standards',
-    cardTitle:'🧪 Ions & Physical Parameters',
-    btnAnalyze:'⚗️ ANALYSE WATER SAMPLE',
-    btnReset:'Clear form',
-    resultsTitle:'📊 Detailed Results',
-    usageTitle:'🔍 Water Suitability',
-    alertFill:'Please fill in all fields!',
-    mpcLabel:'MPC',
+  en:{
+    badge:'💧 Digital Environmental Tool',subtitle:'Digital Water Analyser · Based on WHO & EU Standards',
+    cardTitle:'🧪 Ions & Physical Parameters',btnAnalyze:'⚗️ ANALYSE WATER SAMPLE',btnReset:'Clear form',
+    resultsTitle:'📊 Detailed Results',usageTitle:'🔍 Water Suitability',alertFill:'Please fill in all fields!',
     verdicts:{
-      good:  ['EXCELLENT QUALITY','All parameters within MPC limits'],
-      okv:   ['SATISFACTORY',     w=>`${w} parameter(s) near limit — monitoring required`],
-      badv:  ['UNSATISFACTORY',   e=>`${e} MPC exceedance(s) — requires attention`],
-      danger:['POOR QUALITY',     e=>`${e} MPC exceedances — water requires treatment`],
+      good:['EXCELLENT QUALITY','All parameters within MPC limits'],
+      okv:['SATISFACTORY',w=>`${w} parameter(s) near limit — monitoring required`],
+      badv:['UNSATISFACTORY',e=>`${e} MPC exceedance(s) — requires attention`],
+      danger:['POOR QUALITY',e=>`${e} MPC exceedances — water requires treatment`],
     },
-    sl:{ ok:'normal', warn:'near limit', bad:'exceeded' },
-    ll:{ ph:'range: 6.5–8.5', min:(l,u)=>`MPC ≥ ${l} ${u}`, max:(l,u)=>`MPC ≤ ${l} ${u}` },
+    sl:{ok:'normal',warn:'near limit',bad:'exceeded'},
+    ll:{ph:'range: 6.5–8.5',min:(l,u)=>`MPC ≥ ${l} ${u}`,max:(l,u)=>`MPC ≤ ${l} ${u}`},
     uses:[{icon:'🚰',l:'Drinking Water'},{icon:'🌾',l:'Agricultural Irrigation'},{icon:'🏭',l:'Industrial Use'},{icon:'🐟',l:'Fishery'},{icon:'⚠️',l:'Eutrophication Risk'}],
-    useStatus:{ yes:'✅ Suitable', no:'❌ Not suitable', maybe:'⚠️ With restrictions' },
-    ions:{ CO3:'Carbonates',HCO3:'Bicarbonates',PO4:'Phosphates',SO4:'Sulphates',Cl:'Chlorides',NH4:'Ammonium',NO3:'Nitrates',NO2:'Nitrites',hardness:'Total Hardness',DO:'Dissolved O₂',pH:'pH Level' },
-    units:{ mg:'mg/L', meq:'meq/L', none:'' },
-    hints:{ CO3:'MPC ≤ 300 mg/L',HCO3:'MPC ≤ 400 mg/L',PO4:'MPC ≤ 3.5 mg/L',SO4:'MPC ≤ 500 mg/L',Cl:'MPC ≤ 350 mg/L',NH4:'MPC ≤ 0.5 mg/L',NO3:'MPC ≤ 45 mg/L',NO2:'MPC ≤ 3.3 mg/L',hardness:'MPC ≤ 7.0 meq/L',DO:'MPC ≥ 4.0 mg/L',pH:'Range: 6.5 – 8.5' },
+    useStatus:{yes:'✅ Suitable',no:'❌ Not suitable',maybe:'⚠️ With restrictions'},
+    ions:{CO3:'Carbonates',HCO3:'Bicarbonates',PO4:'Phosphates',SO4:'Sulphates',Cl:'Chlorides',NH4:'Ammonium',NO3:'Nitrates',NO2:'Nitrites',hardness:'Total Hardness',DO:'Dissolved O₂',pH:'pH Level',colour:'Colour',turbidity:'Turbidity',odour:'Odour',taste:'Taste'},
+    units:{mg:'mg/L',meq:'meq/L',none:'',deg:'°',ntu:'NTU',pts:'pts'},
+    hints:{CO3:'MPC ≤ 300 mg/L',HCO3:'MPC ≤ 400 mg/L',PO4:'MPC ≤ 3.5 mg/L',SO4:'MPC ≤ 500 mg/L',Cl:'MPC ≤ 350 mg/L',NH4:'MPC ≤ 0.5 mg/L',NO3:'MPC ≤ 45 mg/L',NO2:'MPC ≤ 3.3 mg/L',hardness:'MPC ≤ 7.0 meq/L',DO:'MPC ≥ 4.0 mg/L',pH:'Range: 6.5 – 8.5',colour:'MPC ≤ 20°',turbidity:'MPC ≤ 2.6 NTU',odour:'MPC ≤ 2 points',taste:'MPC ≤ 2 points'},
+    notMeasured:'— not measured',
+    partialNote:(n,t)=>`Analysis based on ${n} of ${t} parameters entered. Results may not reflect full water quality.`,
+    orgTitle:'👁️ Organoleptic Parameters',
   },
-  az: {
-    badge:'💧 Rəqəmsal Ekoloji Alət',
-    subtitle:'Rəqəmsal Su Analiz Sistemi · ÜST və AB Standartlarına əsasən',
-    cardTitle:'🧪 İonlar və Fiziki Göstəricilər',
-    btnAnalyze:'⚗️ SU NÜMUNƏSİNİ ANALİZ ET',
-    btnReset:'Formu təmizlə',
-    resultsTitle:'📊 Ətraflı Nəticələr',
-    usageTitle:'🔍 Suyun Yararlılığı',
-    alertFill:'Zəhmət olmasa bütün xanaları doldurun!',
-    mpcLabel:'İYH',
+  az:{
+    badge:'💧 Rəqəmsal Ekoloji Alət',subtitle:'Rəqəmsal Su Analiz Sistemi · ÜST və AB Standartlarına əsasən',
+    cardTitle:'🧪 İonlar və Fiziki Göstəricilər',contextTitle:'🗂️ Nümunə və Qiymətləndirmə Konteksti',samplePanel:'Nümunə məlumatı',profilePanel:'Qiymətləndirmə profili',sampleId:'Nümunə ID',waterBody:'Su obyekti',location:'Məkan',date:'Nümunə götürülmə tarixi',depth:'Nümunə dərinliyi',temperature:'Suyun temperaturu',profileLabel:'İstinad profili',profileHelper:'Ölçülmüş göstəriciləri hansı kontekstdə şərh etdiyinizi seçin. Seçilmiş profil analizlə birlikdə saxlanılır.',profileNotes:{drinking:'Bu qiymətləndirmədə mövcud AquaMetric istinad hədləri istifadə olunur.',environmental:'Yalnız ekoloji skrininqdir. Mövcud istinad hədləri müqayisə üçün göstərilir və formal ekoloji təsnifat deyil.',custom:'Fərdi / tədqiqat konteksti. Nəticəni formal qiymətləndirmə kimi qəbul etməzdən əvvəl istinad hədlərini müəyyənləşdirin və yoxlayın.'},summaryTitle:'📋 Qiymətləndirmə xülasəsi',summaryMeasured:'Ölçülən göstəricilər',summaryComplete:'Məlumat tamlığı',summaryExceeded:'Aşım',summaryWarning:'Həddə yaxın',btnAnalyze:'⚗️ SU NÜMUNƏSİNİ ANALİZ ET',btnReset:'Formu təmizlə',
+    resultsTitle:'📊 Ətraflı Nəticələr',usageTitle:'🔍 Suyun Yararlılığı',alertFill:'Zəhmət olmasa bütün xanaları doldurun!',
     verdicts:{
-      good:  ['ƏLA KEYFİYYƏT',      'Bütün göstəricilər norma həddindədir'],
-      okv:   ['QANAATBƏXŞ',          w=>`${w} göstərici həddə yaxındır — monitorinq tələb olunur`],
-      badv:  ['QANAATBƏXŞ DEYİL',   e=>`${e} İYH aşımı — diqqət tələb olunur`],
-      danger:['ZƏYF KEYFİYYƏT',     e=>`${e} İYH aşımı — su təmizlənməsini tələb edir`],
+      good:['ƏLA KEYFİYYƏT','Bütün göstəricilər norma həddindədir'],
+      okv:['QANAATBƏXŞ',w=>`${w} göstərici həddə yaxındır — monitorinq tələb olunur`],
+      badv:['QANAATBƏXŞ DEYİL',e=>`${e} İYH aşımı — diqqət tələb olunur`],
+      danger:['ZƏYF KEYFİYYƏT',e=>`${e} İYH aşımı — su təmizlənməsini tələb edir`],
     },
-    sl:{ ok:'norma', warn:'həddə yaxın', bad:'aşılmış' },
-    ll:{ ph:'norma: 6.5–8.5', min:(l,u)=>`İYH ≥ ${l} ${u}`, max:(l,u)=>`İYH ≤ ${l} ${u}` },
+    sl:{ok:'norma',warn:'həddə yaxın',bad:'aşılmış'},
+    ll:{ph:'norma: 6.5–8.5',min:(l,u)=>`İYH ≥ ${l} ${u}`,max:(l,u)=>`İYH ≤ ${l} ${u}`},
     uses:[{icon:'🚰',l:'İçməli Su'},{icon:'🌾',l:'Kənd Təsərrüfatı Suvarması'},{icon:'🏭',l:'Texniki İstifadə'},{icon:'🐟',l:'Balıqçılıq'},{icon:'⚠️',l:'Evtrofikasiya Riski'}],
-    useStatus:{ yes:'✅ Yararlıdır', no:'❌ Yararlı deyil', maybe:'⚠️ Məhdudiyyətlərlə' },
-    ions:{ CO3:'Karbonatlar',HCO3:'Bikarbonatlar',PO4:'Fosfatlar',SO4:'Sulfatlar',Cl:'Xloridlər',NH4:'Ammonium',NO3:'Nitratlar',NO2:'Nitritlər',hardness:'Ümumi Sərtlik',DO:'Həll olmuş O₂',pH:'pH Səviyyəsi' },
-    units:{ mg:'mq/L', meq:'meq/L', none:'' },
-    hints:{ CO3:'İYH ≤ 300 mq/L',HCO3:'İYH ≤ 400 mq/L',PO4:'İYH ≤ 3.5 mq/L',SO4:'İYH ≤ 500 mq/L',Cl:'İYH ≤ 350 mq/L',NH4:'İYH ≤ 0.5 mq/L',NO3:'İYH ≤ 45 mq/L',NO2:'İYH ≤ 3.3 mq/L',hardness:'İYH ≤ 7.0 meq/L',DO:'İYH ≥ 4.0 mq/L',pH:'Norma: 6.5 – 8.5' },
+    useStatus:{yes:'✅ Yararlıdır',no:'❌ Yararlı deyil',maybe:'⚠️ Məhdudiyyətlərlə'},
+    ions:{CO3:'Karbonatlar',HCO3:'Bikarbonatlar',PO4:'Fosfatlar',SO4:'Sulfatlar',Cl:'Xloridlər',NH4:'Ammonium',NO3:'Nitratlar',NO2:'Nitritlər',hardness:'Ümumi Sərtlik',DO:'Həll olmuş O₂',pH:'pH Səviyyəsi',colour:'Rənglənmə',turbidity:'Bulanıqlıq',odour:'İy',taste:'Dad'},
+    units:{mg:'mq/L',meq:'meq/L',none:'',deg:'°',ntu:'NTU',pts:'xal'},
+    hints:{CO3:'İYH ≤ 300 mq/L',HCO3:'İYH ≤ 400 mq/L',PO4:'İYH ≤ 3.5 mq/L',SO4:'İYH ≤ 500 mq/L',Cl:'İYH ≤ 350 mq/L',NH4:'İYH ≤ 0.5 mq/L',NO3:'İYH ≤ 45 mq/L',NO2:'İYH ≤ 3.3 mq/L',hardness:'İYH ≤ 7.0 meq/L',DO:'İYH ≥ 4.0 mq/L',pH:'Norma: 6.5 – 8.5',colour:'İYH ≤ 20°',turbidity:'İYH ≤ 2.6 NTU',odour:'İYH ≤ 2 xal',taste:'İYH ≤ 2 xal'},
+    notMeasured:'— ölçülməyib',
+    partialNote:(n,t)=>`Analiz ${t} göstəricidən ${n}-nə əsasən aparılıb. Nəticələr tam su keyfiyyətini əks etdirməyə bilər.`,
+    orgTitle:'👁️ Orqanoleptik Göstəricilər',
   },
-  ru: {
-    badge:'💧 Цифровой Экологический Инструмент',
-    subtitle:'Цифровой Анализатор Воды · Стандарты ВОЗ и ЕС',
-    cardTitle:'🧪 Ионы и Физические Показатели',
-    btnAnalyze:'⚗️ АНАЛИЗИРОВАТЬ ПРОБУ',
-    btnReset:'Очистить форму',
-    resultsTitle:'📊 Детальные Результаты',
-    usageTitle:'🔍 Пригодность Воды',
-    alertFill:'Пожалуйста, заполните все поля!',
-    mpcLabel:'ПДК',
+  ru:{
+    badge:'💧 Цифровой Экологический Инструмент',subtitle:'Цифровой Анализатор Воды · Стандарты ВОЗ и ЕС',
+    cardTitle:'🧪 Ионы и Физические Показатели',contextTitle:'🗂️ Информация о пробе и контексте оценки',samplePanel:'Информация о пробе',profilePanel:'Профиль оценки',sampleId:'ID пробы',waterBody:'Водоём',location:'Местоположение',date:'Дата отбора',depth:'Глубина отбора',temperature:'Температура воды',profileLabel:'Профиль оценки',profileHelper:'Выберите контекст интерпретации измеренных значений. Профиль сохраняется вместе с анализом.',profileNotes:{drinking:'Для этой оценки используются текущие референсные пределы AquaMetric.',environmental:'Только экологический скрининг. Текущие референсные пределы используются для сравнения и не являются формальной экологической классификацией.',custom:'Пользовательский / исследовательский контекст. Перед формальной оценкой необходимо определить и проверить референсные пределы.'},summaryTitle:'📋 Сводка оценки',summaryMeasured:'Измерено параметров',summaryComplete:'Полнота данных',summaryExceeded:'Превышение',summaryWarning:'Близко к пределу',btnAnalyze:'⚗️ АНАЛИЗИРОВАТЬ ПРОБУ',btnReset:'Очистить форму',
+    resultsTitle:'📊 Детальные Результаты',usageTitle:'🔍 Пригодность Воды',alertFill:'Пожалуйста, заполните все поля!',
     verdicts:{
-      good:  ['ОТЛИЧНОЕ КАЧЕСТВО',       'Все показатели в пределах ПДК'],
-      okv:   ['УДОВЛЕТВОРИТЕЛЬНОЕ',       w=>`${w} показатель(я) близко к пределу — мониторинг необходим`],
-      badv:  ['НЕУДОВЛЕТВОРИТЕЛЬНОЕ',     e=>`${e} превышение(й) ПДК — требует внимания`],
-      danger:['ПЛОХОЕ КАЧЕСТВО',          e=>`${e} превышений ПДК — вода требует очистки`],
+      good:['ОТЛИЧНОЕ КАЧЕСТВО','Все показатели в пределах ПДК'],
+      okv:['УДОВЛЕТВОРИТЕЛЬНОЕ',w=>`${w} показатель(я) близко к пределу — мониторинг необходим`],
+      badv:['НЕУДОВЛЕТВОРИТЕЛЬНОЕ',e=>`${e} превышение(й) ПДК — требует внимания`],
+      danger:['ПЛОХОЕ КАЧЕСТВО',e=>`${e} превышений ПДК — вода требует очистки`],
     },
-    sl:{ ok:'норма', warn:'близко', bad:'превышение' },
-    ll:{ ph:'норма: 6.5–8.5', min:(l,u)=>`ПДК ≥ ${l} ${u}`, max:(l,u)=>`ПДК ≤ ${l} ${u}` },
+    sl:{ok:'норма',warn:'близко',bad:'превышение'},
+    ll:{ph:'норма: 6.5–8.5',min:(l,u)=>`ПДК ≥ ${l} ${u}`,max:(l,u)=>`ПДК ≤ ${l} ${u}`},
     uses:[{icon:'🚰',l:'Питьевая вода'},{icon:'🌾',l:'Орошение полей'},{icon:'🏭',l:'Технические нужды'},{icon:'🐟',l:'Рыбное хозяйство'},{icon:'⚠️',l:'Риск эвтрофикации'}],
-    useStatus:{ yes:'✅ Пригодна', no:'❌ Не пригодна', maybe:'⚠️ С ограничениями' },
-    ions:{ CO3:'Карбонаты',HCO3:'Гидрокарбонаты',PO4:'Фосфаты',SO4:'Сульфаты',Cl:'Хлориды',NH4:'Аммоний',NO3:'Нитраты',NO2:'Нитриты',hardness:'Общая жёсткость',DO:'Растворённый O₂',pH:'pH' },
-    units:{ mg:'мг/л', meq:'мг-экв/л', none:'' },
-    hints:{ CO3:'ПДК ≤ 300 мг/л',HCO3:'ПДК ≤ 400 мг/л',PO4:'ПДК ≤ 3.5 мг/л',SO4:'ПДК ≤ 500 мг/л',Cl:'ПДК ≤ 350 мг/л',NH4:'ПДК ≤ 0.5 мг/л',NO3:'ПДК ≤ 45 мг/л',NO2:'ПДК ≤ 3.3 мг/л',hardness:'ПДК ≤ 7.0 мг-экв/л',DO:'ПДК ≥ 4.0 мг/л',pH:'норма: 6.5 – 8.5' },
+    useStatus:{yes:'✅ Пригодна',no:'❌ Не пригодна',maybe:'⚠️ С ограничениями'},
+    ions:{CO3:'Карбонаты',HCO3:'Гидрокарбонаты',PO4:'Фосфаты',SO4:'Сульфаты',Cl:'Хлориды',NH4:'Аммоний',NO3:'Нитраты',NO2:'Нитриты',hardness:'Общая жёсткость',DO:'Растворённый O₂',pH:'pH',colour:'Цветность',turbidity:'Мутность',odour:'Запах',taste:'Привкус'},
+    units:{mg:'мг/л',meq:'мг-экв/л',none:'',deg:'°',ntu:'ЕМФ',pts:'балл'},
+    hints:{CO3:'ПДК ≤ 300 мг/л',HCO3:'ПДК ≤ 400 мг/л',PO4:'ПДК ≤ 3.5 мг/л',SO4:'ПДК ≤ 500 мг/л',Cl:'ПДК ≤ 350 мг/л',NH4:'ПДК ≤ 0.5 мг/л',NO3:'ПДК ≤ 45 мг/л',NO2:'ПДК ≤ 3.3 мг/л',hardness:'ПДК ≤ 7.0 мг-экв/л',DO:'ПДК ≥ 4.0 мг/л',pH:'норма: 6.5 – 8.5',colour:'ПДК ≤ 20°',turbidity:'ПДК ≤ 2.6 ЕМФ',odour:'ПДК ≤ 2 балла',taste:'ПДК ≤ 2 балла'},
+    notMeasured:'— не измерено',
+    partialNote:(n,t)=>`Анализ выполнен по ${n} из ${t} показателей. Результаты могут не отражать полное качество воды.`,
+    orgTitle:'👁️ Органолептические показатели',
   }
 };
+const PDK={CO3:{limit:300,uk:'mg',formula:'CO₃²⁻',type:'max'},HCO3:{limit:400,uk:'mg',formula:'HCO₃⁻',type:'max'},PO4:{limit:3.5,uk:'mg',formula:'PO₄³⁻',type:'max'},SO4:{limit:500,uk:'mg',formula:'SO₄²⁻',type:'max'},Cl:{limit:350,uk:'mg',formula:'Cl⁻',type:'max'},NH4:{limit:0.5,uk:'mg',formula:'NH₄⁺',type:'max'},NO3:{limit:45,uk:'mg',formula:'NO₃⁻',type:'max'},NO2:{limit:3.3,uk:'mg',formula:'NO₂⁻',type:'max'},hardness:{limit:7.0,uk:'meq',formula:'',type:'max'},DO:{limit:4.0,uk:'mg',formula:'O₂',type:'min'},pH:{limit:null,uk:'none',formula:'pH',type:'ph'},colour:{limit:20,uk:'deg',formula:'',type:'max'},turbidity:{limit:2.6,uk:'ntu',formula:'',type:'max'},odour:{limit:2,uk:'pts',formula:'',type:'max',org:true},taste:{limit:2,uk:'pts',formula:'',type:'max',org:true}};
 
-const PDK = {
-  CO3:     {limit:300,  uk:'mg',  formula:'CO₃²⁻', type:'max'},
-  HCO3:    {limit:400,  uk:'mg',  formula:'HCO₃⁻', type:'max'},
-  PO4:     {limit:3.5,  uk:'mg',  formula:'PO₄³⁻', type:'max'},
-  SO4:     {limit:500,  uk:'mg',  formula:'SO₄²⁻', type:'max'},
-  Cl:      {limit:350,  uk:'mg',  formula:'Cl⁻',    type:'max'},
-  NH4:     {limit:0.5,  uk:'mg',  formula:'NH₄⁺',  type:'max'},
-  NO3:     {limit:45,   uk:'mg',  formula:'NO₃⁻',  type:'max'},
-  NO2:     {limit:3.3,  uk:'mg',  formula:'NO₂⁻',  type:'max'},
-  hardness:{limit:7.0,  uk:'meq', formula:'',       type:'max'},
-  DO:      {limit:4.0,  uk:'mg',  formula:'O₂',     type:'min'},
-  pH:      {limit:null, uk:'none',formula:'pH',     type:'ph' },
-};
+let lang='en',lastData=null,lastStatuses=null,lastFilled=0,lastTotal=0;
 
-let lang = 'en';
-let lastData = null, lastStatuses = null;
-
-function setLang(l) {
-  lang = l;
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('active');
-  applyLang();
-  if (lastData) renderResults(lastData, lastStatuses);
-}
-
-function applyLang() {
-  const t = T[lang];
-  document.getElementById('t-badge').textContent = t.badge;
-  document.getElementById('t-subtitle').textContent = t.subtitle;
-  document.getElementById('t-card-title').textContent = t.cardTitle;
-  document.getElementById('t-btn-analyze').textContent = t.btnAnalyze;
-  document.getElementById('t-btn-reset').textContent = t.btnReset;
-  document.getElementById('t-results-title').textContent = t.resultsTitle;
-  document.getElementById('t-usage-title').textContent = t.usageTitle;
-  for (const key of Object.keys(PDK)) {
-    const ln = document.getElementById('l-'+key);
-    const hn = document.getElementById('h-'+key);
-    if (ln) ln.textContent = `${t.ions[key]} ${PDK[key].formula}`;
-    if (hn) hn.textContent = t.hints[key];
-  }
-}
-
-function checkParam(key, val) {
-  const p = PDK[key];
-  if (p.type==='ph')  return (val>=6.5 && val<=8.5) ? 'ok' : 'bad';
-  if (p.type==='min') return val>=p.limit ? 'ok' : 'bad';
-  if (val>p.limit) return 'bad';
-  if (val>=p.limit*0.85) return 'warn';
-  return 'ok';
-}
-
-function analyze() {
-  const t = T[lang];
-  const data = {};
-  let ok = true;
-  for (const key of Object.keys(PDK)) {
-    const el = document.getElementById(key);
-    const v = parseFloat(el.value);
-    if (isNaN(v)||v<0) { el.style.borderColor='rgba(255,68,85,0.6)'; ok=false; }
-    else { data[key]=v; el.style.borderColor=''; }
-  }
-  if (!ok) { alert(t.alertFill); return; }
-  const statuses = {};
-  for (const key of Object.keys(PDK)) {
-    statuses[key] = checkParam(key, data[key]);
-    document.getElementById(key).className = statuses[key];
-  }
-  lastData=data; lastStatuses=statuses;
-  renderResults(data, statuses);
-}
-
-function renderResults(data, statuses) {
-  const t = T[lang];
-  const exceeded = Object.values(statuses).filter(s=>s==='bad').length;
-  const warning  = Object.values(statuses).filter(s=>s==='warn').length;
-
-  // Verdict
-  const banner = document.getElementById('verdict-banner');
-  let vClass, vIcon, vTitle, vSub;
-  if      (exceeded===0&&warning===0) { vClass='good';   vIcon='💧'; vTitle=t.verdicts.good[0];   vSub=t.verdicts.good[1]; }
-  else if (exceeded===0)              { vClass='ok-v';   vIcon='🔵'; vTitle=t.verdicts.okv[0];    vSub=t.verdicts.okv[1](warning); }
-  else if (exceeded<=2)               { vClass='bad-v';  vIcon='🟡'; vTitle=t.verdicts.badv[0];   vSub=t.verdicts.badv[1](exceeded); }
-  else                                { vClass='danger'; vIcon='🔴'; vTitle=t.verdicts.danger[0]; vSub=t.verdicts.danger[1](exceeded); }
-  banner.className=`verdict ${vClass}`;
-  banner.innerHTML=`<div class="verdict-icon">${vIcon}</div><div><div class="verdict-title">${vTitle}</div><div class="verdict-sub">${vSub}</div></div>`;
-
-  // Params
-  const list = document.getElementById('param-list');
-  list.innerHTML='';
-  let delay=0;
-  for (const key of Object.keys(PDK)) {
-    const p=PDK[key], val=data[key], st=statuses[key];
-    const unit=t.units[p.uk];
-    const icon=st==='ok'?'✅':st==='warn'?'⚠️':'❌';
-    const cls=st==='ok'?'ok-c':st==='warn'?'warn-c':'bad-c';
-    const bc=st==='ok'?'ok-b':st==='warn'?'warn-b':'bad-b';
-    let lim = p.type==='ph' ? t.ll.ph : p.type==='min' ? t.ll.min(p.limit,unit) : t.ll.max(p.limit,unit);
-    const row=document.createElement('div');
-    row.className='param-row'; row.style.animationDelay=`${delay}s`;
-    row.innerHTML=`<div class="param-status">${icon}</div><div class="param-name">${t.ions[key]} ${p.formula?`<b>${p.formula}</b>`:''}<small>${lim}</small></div><div class="param-value ${cls}">${val} ${unit}</div><span class="param-badge ${bc}">${t.sl[st]}</span>`;
-    list.appendChild(row); delay+=0.05;
-  }
-
-  // Usage
-  const ek=Object.keys(statuses).filter(k=>statuses[k]==='bad');
-  const us=[
-    ek.length===0?'yes':ek.some(k=>['SO4','CO3','HCO3','hardness','NH4','NO3','NO2','Cl','DO','pH'].includes(k))?'no':'maybe',
-    ek.some(k=>['NH4','NO3','NO2'].includes(k))?'no':ek.length>0?'maybe':'yes',
-    ek.some(k=>['NH4','NO2'].includes(k))?'maybe':'yes',
-    ek.some(k=>['NH4','NO2','DO'].includes(k))?'no':'yes',
-    (statuses['PO4']==='warn'||statuses['PO4']==='bad'||statuses['NO3']==='bad')?'no':'yes',
-  ];
-  const useGrid=document.getElementById('use-grid');
-  useGrid.innerHTML='';
-  t.uses.forEach((u,i)=>{
-    const s=us[i], div=document.createElement('div');
-    div.className=`use-card ${s}`;
-    div.innerHTML=`<span class="use-icon">${u.icon}</span><div><b>${u.l}</b><br><small>${t.useStatus[s]}</small></div>`;
-    useGrid.appendChild(div);
+function setLang(l){lang=l;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('active');applyLang();if(lastData)renderResults(lastData,lastStatuses,lastFilled,lastTotal);}
+function applyLang(){const t=T[lang];
+  document.getElementById('t-badge').textContent=t.badge;document.getElementById('t-subtitle').textContent=t.subtitle;document.getElementById('t-card-title').textContent=t.cardTitle;document.getElementById('t-btn-analyze').textContent=t.btnAnalyze;document.getElementById('t-btn-reset').textContent=t.btnReset;document.getElementById('t-results-title').textContent=t.resultsTitle;document.getElementById('t-usage-title').textContent=t.usageTitle;
+  const orgEl=document.getElementById('t-org-title');if(orgEl)orgEl.innerHTML=`${t.orgTitle} <span style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;">(optional)</span>`;
+  for(const key of Object.keys(PDK)){const ln=document.getElementById('l-'+key);const hn=document.getElementById('h-'+key);if(ln)ln.textContent=`${t.ions[key]||key} ${PDK[key].formula||''}`;if(hn)hn.textContent=t.hints[key]||'';}
+  // translate select options
+  const OPT={
+    en:{none:'— not assessed',o0:'0 — No odour',o1:'1 — Very faint',o2:'2 — Faint (acceptable)',o3:'3 — Noticeable ⚠️',o4:'4 — Strong ❌',o5:'5 — Very strong ❌',t0:'0 — No taste',t1:'1 — Very faint',t2:'2 — Faint (acceptable)',t3:'3 — Noticeable ⚠️',t4:'4 — Strong ❌',t5:'5 — Very strong ❌'},
+    ru:{none:'— не оценивалось',o0:'0 — Без запаха',o1:'1 — Очень слабый',o2:'2 — Слабый (допустимый)',o3:'3 — Заметный ⚠️',o4:'4 — Сильный ❌',o5:'5 — Очень сильный ❌',t0:'0 — Без привкуса',t1:'1 — Очень слабый',t2:'2 — Слабый (допустимый)',t3:'3 — Заметный ⚠️',t4:'4 — Сильный ❌',t5:'5 — Очень сильный ❌'},
+    az:{none:'— qiymətləndirilməyib',o0:'0 — İysiz',o1:'1 — Çox zəif',o2:'2 — Zəif (qəbul olunan)',o3:'3 — Nəzərə çarpan ⚠️',o4:'4 — Güclü ❌',o5:'5 — Çox güclü ❌',t0:'0 — Dadsız',t1:'1 — Çox zəif',t2:'2 — Zəif (qəbul olunan)',t3:'3 — Nəzərə çarpan ⚠️',t4:'4 — Güclü ❌',t5:'5 — Çox güclü ❌'},
+  };
+  const o=OPT[lang];
+  const setOpt=(id,txt)=>{const el=document.getElementById(id);if(el)el.textContent=txt;};
+  ['odour','taste'].forEach(param=>{
+    setOpt(`opt-${param}-none`,o.none);
+    const prefix=param==='odour'?'o':'t';
+    [0,1,2,3,4,5].forEach(i=>setOpt(`opt-${param}-${i}`,o[prefix+i]));
   });
+  // context + summary
+  const contextMap={
+    't-context-title':t.contextTitle,'t-sample-panel':t.samplePanel,'t-profile-panel':t.profilePanel,
+    'l-sample-id':t.sampleId,'l-water-body':t.waterBody,'l-location':t.location,'l-date':t.date,'l-depth':t.depth,'l-temperature':t.temperature,
+    'l-profile':t.profileLabel,'profile-helper':t.profileHelper,'t-summary-title':t.summaryTitle,
+    'summary-measured-label':t.summaryMeasured,'summary-complete-label':t.summaryComplete,'summary-exceeded-label':t.summaryExceeded,'summary-warning-label':t.summaryWarning
+  };
+  Object.entries(contextMap).forEach(([id,txt])=>{const el=document.getElementById(id);if(el)el.textContent=txt;});
+  const opts={drinking:t.profilePanel==='Assessment Profile'? 'Drinking Water':'İçməli Su',environmental:t.profilePanel==='Assessment Profile'?'Environmental / Surface Water Screening':'Ekoloji / Səth Suyu Skrininqi',custom:t.profilePanel==='Assessment Profile'?'Custom / Research':'Fərdi / Tədqiqat'};
+  const po=document.getElementById('profile-drinking'),pe=document.getElementById('profile-environmental'),pc=document.getElementById('profile-custom');
+  if(po)po.textContent=lang==='ru'?'Питьевая вода':lang==='az'?'İçməli su':'Drinking Water';
+  if(pe)pe.textContent=lang==='ru'?'Экологический / поверхностные воды — скрининг':lang==='az'?'Ekoloji / səth suları — skrininq':'Environmental / Surface Water Screening';
+  if(pc)pc.textContent=lang==='ru'?'Пользовательский / исследовательский':lang==='az'?'Fərdi / tədqiqat':'Custom / Research';
+  updateProfileNote();
+  // history
+  renderHistory();
+}
+function checkParam(key,val){const p=PDK[key];if(p.type==='ph')return(val>=6.5&&val<=8.5)?'ok':'bad';if(p.type==='min')return val>=p.limit?'ok':'bad';if(val>p.limit)return'bad';if(val>=p.limit*0.85)return'warn';return'ok';}
 
+function getContextMeta(){
+  return {
+    sampleId:document.getElementById('sample-id')?.value.trim()||'',
+    waterBody:document.getElementById('water-body')?.value.trim()||'',
+    location:document.getElementById('sample-location')?.value.trim()||'',
+    date:document.getElementById('sample-date')?.value||'',
+    depth:document.getElementById('sample-depth')?.value.trim()||'',
+    temperature:document.getElementById('sample-temp')?.value.trim()||'',
+    profile:document.getElementById('assessment-profile')?.value||'drinking'
+  };
+}
+function setContextMeta(meta={}){
+  const map={'sample-id':'sampleId','water-body':'waterBody','sample-location':'location','sample-date':'date','sample-depth':'depth','sample-temp':'temperature','assessment-profile':'profile'};
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&meta[key]!==undefined)el.value=meta[key];});
+  updateProfileNote();
+}
+function updateProfileNote(){
+  const profile=document.getElementById('assessment-profile')?.value||'drinking';
+  const note=document.getElementById('profile-note');
+  const t=T[lang];
+  if(note&&t.profileNotes)note.textContent=t.profileNotes[profile];
+}
+function renderAssessmentSummary(filledCount,total,exceeded,warning,meta){
+  const t=T[lang];
+  const measured=document.getElementById('summary-measured');
+  const complete=document.getElementById('summary-complete');
+  const ex=document.getElementById('summary-exceeded');
+  const wa=document.getElementById('summary-warning');
+  if(measured)measured.textContent=`${filledCount} / ${total}`;
+  if(complete)complete.textContent=`${Math.round((filledCount/total)*100)}%`;
+  if(ex)ex.textContent=exceeded;
+  if(wa)wa.textContent=warning;
+  const profileName=document.getElementById('assessment-profile')?.selectedOptions?.[0]?.textContent||'';
+  const parts=[];
+  if(meta.sampleId)parts.push(`${t.sampleId}: ${meta.sampleId}`);
+  if(meta.waterBody)parts.push(`${t.waterBody}: ${meta.waterBody}`);
+  if(meta.location)parts.push(`${t.location}: ${meta.location}`);
+  if(meta.date)parts.push(`${t.date}: ${meta.date}`);
+  parts.push(`${t.profileLabel}: ${profileName}`);
+  const metaEl=document.getElementById('summary-meta');
+  if(metaEl)metaEl.textContent=parts.join('  ·  ');
+}
+
+function analyze(){
+  const t=T[lang];
+  const data={};
+  const statuses={};
+  let filledCount=0;
+  const total=Object.keys(PDK).length;
+  for(const key of Object.keys(PDK)){
+    const el=document.getElementById(key);
+    if(!el)continue;
+    const isSelect=el.tagName==='SELECT';
+    const rawVal=isSelect?el.value:el.value;
+    if(rawVal===''||rawVal===null){
+      if(!isSelect){el.style.borderColor='';el.className='';}
+    } else {
+      const v=parseFloat(rawVal);
+      if(isNaN(v)||v<0){
+        if(!isSelect){el.style.borderColor='';el.className='';}
+      } else {
+        data[key]=v;
+        if(PDK[key].org){
+          // organoleptic: score >2 = bad, ==2 = warn, <2 = ok; colour/turbidity: >2=bad,==2=warn
+          statuses[key]=v>2?'bad':v===2?'warn':'ok';
+        } else {
+          statuses[key]=checkParam(key,v);
+          el.className=statuses[key];
+        }
+        filledCount++;
+      }
+    }
+  }
+  if(filledCount===0){alert(t.alertFill);return;}
+  const meta=getContextMeta();
+  lastData=data;lastStatuses=statuses;lastFilled=filledCount;lastTotal=total;lastMeta=meta;
+  saveToHistory(data,statuses,meta);
+  renderResults(data,statuses,filledCount,total,meta);
+}
+
+function renderResults(data,statuses,filledCount,total,meta=getContextMeta()){
+  const t=T[lang];
+  const exceeded=Object.values(statuses).filter(s=>s==='bad').length;
+  const warning=Object.values(statuses).filter(s=>s==='warn').length;
+  const banner=document.getElementById('verdict-banner');
+  let vClass,vIcon,vTitle,vSub;
+  if(exceeded===0&&warning===0){vClass='good';vIcon='💧';vTitle=t.verdicts.good[0];vSub=t.verdicts.good[1];}
+  else if(exceeded===0){vClass='ok-v';vIcon='🔵';vTitle=t.verdicts.okv[0];vSub=t.verdicts.okv[1](warning);}
+  else if(exceeded<=2){vClass='bad-v';vIcon='🟡';vTitle=t.verdicts.badv[0];vSub=t.verdicts.badv[1](exceeded);}
+  else{vClass='danger';vIcon='🔴';vTitle=t.verdicts.danger[0];vSub=t.verdicts.danger[1](exceeded);}
+  banner.className=`verdict ${vClass}`;
+  const partialHtml=(filledCount<total)?`<div style="margin-top:8px;font-size:11px;color:var(--warn);font-family:'Space Mono',monospace;">⚠️ ${t.partialNote(filledCount,total)}</div>`:'';
+  banner.innerHTML=`<div class="verdict-icon">${vIcon}</div><div><div class="verdict-title">${vTitle}</div><div class="verdict-sub">${vSub}</div>${partialHtml}</div>`;
+  renderAssessmentSummary(filledCount,total,exceeded,warning,meta);
+
+  const list=document.getElementById('param-list');list.innerHTML='';let delay=0;
+  for(const key of Object.keys(PDK)){
+    const p=PDK[key];const unit=t.units[p.uk]||'';
+    const row=document.createElement('div');row.className='param-row';row.style.animationDelay=`${delay}s`;
+    if(data[key]===undefined){
+      let lim=p.type==='ph'?t.ll.ph:p.type==='min'?t.ll.min(p.limit,unit):t.ll.max(p.limit,unit);
+      row.innerHTML=`<div class="param-status" style="opacity:.3">○</div><div class="param-name">${t.ions[key]||key} ${p.formula?`<b>${p.formula}</b>`:''}<small>${lim}</small></div><div class="param-value" style="color:var(--muted);font-size:12px;">${t.notMeasured}</div><span class="param-badge" style="background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);">—</span>`;
+    } else {
+      const val=data[key],st=statuses[key];
+      const icon=st==='ok'?'✅':st==='warn'?'⚠️':'❌';
+      const cls=st==='ok'?'ok-c':st==='warn'?'warn-c':'bad-c';
+      const bc=st==='ok'?'ok-b':st==='warn'?'warn-b':'bad-b';
+      let lim=p.type==='ph'?t.ll.ph:p.type==='min'?t.ll.min(p.limit,unit):t.ll.max(p.limit,unit);
+      row.innerHTML=`<div class="param-status">${icon}</div><div class="param-name">${t.ions[key]||key} ${p.formula?`<b>${p.formula}</b>`:''}<small>${lim}</small></div><div class="param-value ${cls}">${val} ${unit}</div><span class="param-badge ${bc}">${t.sl[st]}</span>`;
+    }
+    list.appendChild(row);delay+=0.05;
+  }
+  const ek=Object.keys(statuses).filter(k=>statuses[k]==='bad');
+  const us=[ek.length===0?'yes':ek.some(k=>['SO4','CO3','HCO3','hardness','NH4','NO3','NO2','Cl','DO','pH','colour','turbidity','odour','taste'].includes(k))?'no':'maybe',ek.some(k=>['NH4','NO3','NO2'].includes(k))?'no':ek.length>0?'maybe':'yes',ek.some(k=>['NH4','NO2'].includes(k))?'maybe':'yes',ek.some(k=>['NH4','NO2','DO'].includes(k))?'no':'yes',(statuses['PO4']==='warn'||statuses['PO4']==='bad'||statuses['NO3']==='bad')?'no':'yes'];
+  const useGrid=document.getElementById('use-grid');useGrid.innerHTML='';
+  t.uses.forEach((u,i)=>{const s=us[i],div=document.createElement('div');div.className=`use-card ${s}`;div.innerHTML=`<span class="use-icon">${u.icon}</span><div><b>${u.l}</b><br><small>${t.useStatus[s]}</small></div>`;useGrid.appendChild(div);});
+  renderRemediation(data,statuses);
+  renderChart(data,statuses);
   document.getElementById('results').classList.add('show');
   document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function resetForm() {
-  for (const key of Object.keys(PDK)) {
-    const el=document.getElementById(key);
-    el.value=''; el.className=''; el.style.borderColor='';
+// ── TREATMENT SEQUENCE TRANSLATIONS ─────────────────────────────────────────
+const SEQ_T={
+  en:{
+    title:'🔢 Treatment Sequence',
+    intro:'Follow these steps in order. Skipping or reversing steps reduces effectiveness or damages equipment.',
+    clickHint:'Click any step to jump to detailed instructions ↓',
+    steps:{
+      prefilter:{title:'Pre-filtration & Solids Removal',desc:'Always first. Remove suspended solids, turbidity, and colloids. Protects membranes and resins from clogging.',affects:[]},
+      ph:{title:'pH Correction',desc:'Must happen before most other steps. Wrong pH destroys ion exchange resins, damages RO membranes, and prevents chemical precipitation from working correctly.',affects:['pH']},
+      disinfect:{title:'Disinfection & Organic Removal',desc:'Remove biological contamination (NH₄⁺, NO₂⁻) before ion exchange. Ammonium ions foul cation resins and interfere with further treatment.',affects:['NH4','NO2']},
+      nitrate:{title:'Nitrate Removal',desc:'After disinfection. Biological denitrification or ion exchange. Do before softening — high hardness reduces resin capacity for NO₃⁻.',affects:['NO3']},
+      softening:{title:'Hardness & Carbonate Reduction',desc:'Before RO or nanofiltration — prevents scaling on membranes. Before fine ion exchange — Ca²⁺/Mg²⁺ compete with target ions and exhaust resin faster.',affects:['hardness','CO3','HCO3']},
+      ionremoval:{title:'Specific Ion Removal',desc:'After softening. RO, nanofiltration, or selective ion exchange for sulphates and chlorides. Softened water extends membrane and resin life significantly.',affects:['SO4','Cl']},
+      phosphate:{title:'Phosphate Removal',desc:'Chemical precipitation or coagulation. Do after pH adjustment — precipitation efficiency is highly pH-dependent. For lake restoration, this step targets internal sediment loading.',affects:['PO4']},
+      aeration:{title:'Final Aeration & DO Restoration',desc:'Last step. Aerating after chemical treatment strips residual CO₂, raises dissolved oxygen, and stabilises pH. Do not aerate before ion exchange — CO₂ affects resin performance.',affects:['DO']},
+    }
+  },
+  ru:{
+    title:'🔢 Последовательность очистки',
+    intro:'Выполняйте шаги строго в указанном порядке. Нарушение последовательности снижает эффективность или выводит оборудование из строя.',
+    clickHint:'Нажмите на шаг для перехода к подробным инструкциям ↓',
+    steps:{
+      prefilter:{title:'Предварительная фильтрация',desc:'Всегда первый шаг. Удаление взвешенных частиц, мутности и коллоидов. Защищает мембраны и смолы от засорения.',affects:[]},
+      ph:{title:'Коррекция pH',desc:'Выполняется до большинства других шагов. Неверный pH разрушает ионообменные смолы, повреждает RO-мембраны и нарушает химическое осаждение.',affects:['pH']},
+      disinfect:{title:'Обеззараживание и удаление органики',desc:'Убрать биологическое загрязнение (NH₄⁺, NO₂⁻) до ионного обмена. Аммоний засоряет катиониты и мешает дальнейшей очистке.',affects:['NH4','NO2']},
+      nitrate:{title:'Удаление нитратов',desc:'После обеззараживания. Биологическое денитрифицирование или ионный обмен. До умягчения — высокая жёсткость снижает ёмкость смолы для NO₃⁻.',affects:['NO3']},
+      softening:{title:'Снижение жёсткости и карбонатов',desc:'До RO или нанофильтрации — предотвращает образование накипи на мембранах. До ионного обмена — Ca²⁺/Mg²⁺ конкурируют с целевыми ионами и ускоряют истощение смолы.',affects:['hardness','CO3','HCO3']},
+      ionremoval:{title:'Удаление специфических ионов',desc:'После умягчения. RO, нанофильтрация или селективный ионный обмен для сульфатов и хлоридов. Умягчённая вода существенно продлевает срок службы мембран и смол.',affects:['SO4','Cl']},
+      phosphate:{title:'Удаление фосфатов',desc:'Химическое осаждение или коагуляция. После коррекции pH — эффективность осаждения сильно зависит от pH. Для восстановления озёр — воздействие на внутреннюю нагрузку донных отложений.',affects:['PO4']},
+      aeration:{title:'Финальная аэрация и восстановление O₂',desc:'Последний шаг. Аэрация после химической обработки отдувает остаточный CO₂, повышает растворённый кислород и стабилизирует pH. Не аэрировать до ионного обмена — CO₂ влияет на работу смолы.',affects:['DO']},
+    }
+  },
+  az:{
+    title:'🔢 Təmizləmə ardıcıllığı',
+    intro:'Bu addımları sıra ilə icra edin. Ardıcıllığın pozulması effektivliyi azaldır və ya avadanlığa zərər verir.',
+    clickHint:'Ətraflı təlimatlara keçmək üçün addıma klikləyin ↓',
+    steps:{
+      prefilter:{title:'Ön filtrasiya və çöküntü çıxarılması',desc:'Həmişə ilk addım. Asılı hissəciklərin, bulanıqlığın və kolloidlərin çıxarılması. Membranları və qatranları tıxanmadan qoruyur.',affects:[]},
+      ph:{title:'pH korreksiyası',desc:'Əksər digər addımlardan əvvəl icra edilməlidir. Yanlış pH ion mübadilə qatranlarını məhv edir, RO membranlarına zərər verir.',affects:['pH']},
+      disinfect:{title:'Dezinfeksiya və üzvi maddə çıxarılması',desc:'Ion mübadiləsindən əvvəl bioloji çirklənməni (NH₄⁺, NO₂⁻) çıxarın. Ammonium kation qatranlarını zədələyir.',affects:['NH4','NO2']},
+      nitrate:{title:'Nitrat çıxarılması',desc:'Dezinfeksiyadan sonra. Bioloji denitrifikasiya və ya ion mübadiləsi. Yumşaltmadan əvvəl — yüksək sərtlik NO₃⁻ üçün qatran tutumunu azaldır.',affects:['NO3']},
+      softening:{title:'Sərtlik və karbonat azaldılması',desc:'RO və ya nanofiltrasiyadan əvvəl — membranlarda çöküntü əmələ gəlməsinin qarşısını alır. Ion mübadiləsindən əvvəl — Ca²⁺/Mg²⁺ hədəf ionlarla rəqabət aparır.',affects:['hardness','CO3','HCO3']},
+      ionremoval:{title:'Spesifik ion çıxarılması',desc:'Yumşaltmadan sonra. Sulfatlar və xloridlər üçün RO, nanofiltrasiya və ya selektiv ion mübadiləsi. Yumşaldılmış su membran və qatranın ömrünü uzadır.',affects:['SO4','Cl']},
+      phosphate:{title:'Fosfat çıxarılması',desc:'Kimyəvi çökdürmə və ya koaqulyasiya. pH tənzimləməsindən sonra — çökdürmə effektivliyi pH-dan çox asılıdır.',affects:['PO4']},
+      aeration:{title:'Son havalandırma və O₂ bərpası',desc:'Son addım. Kimyəvi emaldan sonra havalandırma qalıq CO₂-ni çıxarır, həll olmuş oksigeni artırır. Ion mübadiləsindən əvvəl havalanadırmayın — CO₂ qatranın işinə təsir edir.',affects:['DO']},
+    }
   }
-  lastData=null; lastStatuses=null;
-  document.getElementById('results').classList.remove('show');
-  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+// ── SEQUENCE LOGIC ────────────────────────────────────────────────────────────
+// Master order of all possible steps
+const SEQ_ORDER=['prefilter','ph','disinfect','nitrate','softening','ionremoval','phosphate','aeration'];
+
+// Which exceeded params trigger each step
+const SEQ_TRIGGERS={
+  prefilter:[], // always shown if any exceeded
+  ph:['pH'],
+  disinfect:['NH4','NO2'],
+  nitrate:['NO3'],
+  softening:['hardness','CO3','HCO3'],
+  ionremoval:['SO4','Cl'],
+  phosphate:['PO4'],
+  aeration:['DO'],
+};
+
+// Map step -> anchor param key (for scroll-to link)
+const SEQ_ANCHOR={
+  ph:'pH',disinfect:'NH4',nitrate:'NO3',
+  softening:'hardness',ionremoval:'SO4',
+  phosphate:'PO4',aeration:'DO'
+};
+
+function buildSequence(exceededKeys){
+  // Always include prefilter if there's anything to treat
+  const needed=['prefilter'];
+  for(const step of SEQ_ORDER.slice(1)){
+    const triggers=SEQ_TRIGGERS[step];
+    if(triggers.some(k=>exceededKeys.includes(k))) needed.push(step);
+  }
+  return needed;
 }
 
+function renderSequence(exceededKeys){
+  const seqBlock=document.getElementById('seq-block');
+  if(!seqBlock||exceededKeys.length===0){if(seqBlock)seqBlock.style.display='none';return;}
+  seqBlock.style.display='block';
+  const st=SEQ_T[lang];
+  const steps=buildSequence(exceededKeys);
+  document.getElementById('seq-title').textContent=st.title;
+  document.getElementById('seq-intro').textContent=st.intro;
+  document.getElementById('seq-hint').textContent=st.clickHint;
+  const list=document.getElementById('seq-list');
+  list.innerHTML='';
+  steps.forEach((stepKey,i)=>{
+    const sd=st.steps[stepKey];
+    const anchorKey=SEQ_ANCHOR[stepKey];
+    // which of this step's triggers are actually exceeded
+    const triggeredBy=(SEQ_TRIGGERS[stepKey]||[]).filter(k=>exceededKeys.includes(k));
+    const li=document.createElement('li');
+    li.className='seq-step';
+    if(anchorKey){li.onclick=()=>{const el=document.getElementById(`acc-${anchorKey}`);if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'start'});}};}
+    const tagsHtml=triggeredBy.map(k=>`<span class="seq-tag">${REM[lang].params[k]?.name||k}</span>`).join('');
+    const linkHtml=anchorKey?`<span class="seq-link">→ See detailed instructions</span>`:'';
+    li.innerHTML=`
+      <div class="seq-num">${i+1}</div>
+      <div class="seq-content">
+        <div class="seq-title">${sd.title}</div>
+        <div class="seq-desc">${sd.desc}</div>
+        ${tagsHtml?`<div class="seq-tags">${tagsHtml}</div>`:''}
+        ${linkHtml}
+      </div>`;
+    list.appendChild(li);
+  });
+}
+
+function renderRemediation(data,statuses){
+  const remData=REM[lang];
+  const block=document.getElementById('remediation-block');
+  const content=document.getElementById('remediation-content');
+  document.getElementById('t-rem-title').textContent=remData.title;
+  const exceededKeys=Object.keys(statuses).filter(k=>statuses[k]==='bad');
+  renderSequence(exceededKeys);
+  if(exceededKeys.length===0){block.style.display='none';return;}
+  block.style.display='block';
+  content.innerHTML='';
+  exceededKeys.forEach((key,idx)=>{
+    const p=remData.params[key];if(!p)return;
+    const val=data[key];const unit=T[lang].units[PDK[key].uk];
+    const itemId=`acc-${key}`;
+    const div=document.createElement('div');
+    div.className='acc-item';div.id=itemId;
+    const tabs=remData.tabs;
+    div.innerHTML=`
+      <div class="acc-header" onclick="toggleAcc('${itemId}')">
+        <span class="acc-icon">❌</span>
+        <span class="acc-name">${p.name}</span>
+        <span class="acc-value">${val} ${unit}</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('${itemId}',0,this)">${tabs[0]}</button>
+          <button class="tab-btn" onclick="switchTab('${itemId}',1,this)">${tabs[1]}</button>
+          <button class="tab-btn" onclick="switchTab('${itemId}',2,this)">${tabs[2]}</button>
+        </div>
+        <div class="tab-pane active" id="${itemId}-tab0">
+          <div class="cause-box">${p.cause}</div>
+        </div>
+        <div class="tab-pane" id="${itemId}-tab1">
+          <div class="method-tags">${p.methods.map(m=>`<span class="method-tag">${m}</span>`).join('')}</div>
+          <ul class="steps-list">${p.steps.map(s=>`<li>${s}</li>`).join('')}</ul>
+        </div>
+        <div class="tab-pane" id="${itemId}-tab2">
+          <div class="lab-section">
+            <div class="lab-section-title">📋 Method</div>
+            <div class="lab-principle">${p.lab.method}</div>
+          </div>
+          <div class="lab-section">
+            <div class="lab-section-title">⚗️ Principle</div>
+            <div class="lab-principle">${p.lab.principle}</div>
+          </div>
+          <div class="lab-section">
+            <div class="lab-section-title">📝 Procedure</div>
+            <ul class="lab-steps">${p.lab.steps.map(s=>`<li>${s}</li>`).join('')}</ul>
+          </div>
+          <div class="lab-section">
+            <div class="lab-section-title">🧪 Reagents</div>
+            <div class="lab-reagents">${p.lab.reagents.map(r=>`<span class="lab-reagent">${r}</span>`).join('')}</div>
+          </div>
+          <div class="lab-note">⚠️ ${p.lab.note}</div>
+        </div>
+      </div>`;
+    content.appendChild(div);
+    if(idx===0){div.classList.add('open');}
+  });
+}
+
+function toggleAcc(id){
+  const item=document.getElementById(id);
+  item.classList.toggle('open');
+}
+function switchTab(itemId,tabIdx,btn){
+  const item=document.getElementById(itemId);
+  item.querySelectorAll('.tab-pane').forEach((p,i)=>p.classList.toggle('active',i===tabIdx));
+  item.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===tabIdx));
+}
+
+// ── CHART ─────────────────────────────────────────────────────────────────────
+const CHART_T={
+  en:{title:'📊 Parameter vs MPC Chart',ok:'Within limit',warn:'Near limit',bad:'Exceeded',mpc:'MPC limit',pct:'% of MPC'},
+  ru:{title:'📊 График: значение vs ПДК',ok:'Норма',warn:'Близко',bad:'Превышение',mpc:'ПДК',pct:'% от ПДК'},
+  az:{title:'📊 Göstərici vs İYH qrafiki',ok:'Norma',warn:'Həddə yaxın',bad:'Aşılmış',mpc:'İYH həddi',pct:'% İYH-dan'},
+};
+
+function renderChart(data,statuses){
+  const ct=CHART_T[lang];
+  document.getElementById('t-chart-title').textContent=ct.title;
+  document.getElementById('leg-ok').textContent=ct.ok;
+  document.getElementById('leg-warn').textContent=ct.warn;
+  document.getElementById('leg-bad').textContent=ct.bad;
+  document.getElementById('leg-mpc').textContent=ct.mpc;
+
+  const keys=Object.keys(PDK);
+  const svgEl=document.getElementById('chart-svg');
+
+  // For pH — normalise to 0–100% scale differently
+  // We show % of MPC for max params, % of limit for min, and deviation% for pH
+  const pctOf=(key,val)=>{
+    const p=PDK[key];
+    if(p.type==='ph'){
+      // centre 7.5, range 6.5-8.5 → show distance from centre as %
+      const centre=7.5, range=1.0;
+      return Math.min(Math.abs(val-centre)/range*100, 150);
+    }
+    if(p.type==='min') return p.limit>0?Math.min((p.limit/Math.max(val,0.001))*100,200):0;
+    return p.limit>0?Math.min((val/p.limit)*100,200):0;
+  };
+
+  // only chart measured params
+  const measuredKeys=keys.filter(k=>data[k]!==undefined);
+  const labels=measuredKeys.map(k=>{
+    const t=T[lang];
+    const short={CO3:'CO₃²⁻',HCO3:'HCO₃⁻',PO4:'PO₄³⁻',SO4:'SO₄²⁻',Cl:'Cl⁻',NH4:'NH₄⁺',NO3:'NO₃⁻',NO2:'NO₂⁻',hardness:lang==='ru'?'Жёст.':lang==='az'?'Sərt.':'Hard.',DO:'O₂',pH:'pH'};
+    return short[k]||k;
+  });
+
+  const pcts=measuredKeys.map(k=>pctOf(k,data[k]));
+  const colors=measuredKeys.map(k=>statuses[k]==='bad'?'rgba(255,68,85,.8)':statuses[k]==='warn'?'rgba(255,184,0,.75)':'rgba(0,255,157,.7)');
+
+  // SVG dimensions
+  const W=700,H=260,padL=40,padR=20,padT=20,padB=60;
+  const chartW=W-padL-padR, chartH=H-padT-padB;
+  const n=measuredKeys.length;
+  const barW=Math.floor(chartW/n*0.55);
+  const gap=chartW/n;
+
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="font-family:'Space Mono',monospace;">`;
+
+  // background grid lines
+  [50,100,150].forEach(pct=>{
+    const y=padT+chartH-(pct/150*chartH);
+    const col=pct===100?'rgba(255,255,255,.35)':'rgba(255,255,255,.1)';
+    const dash=pct===100?'':'5,4';
+    svg+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="${col}" stroke-width="${pct===100?1.5:0.8}" stroke-dasharray="${dash}"/>`;
+    const lbl=pct===100?`100% (${ct.mpc})`:`${pct}%`;
+    svg+=`<text x="${padL-4}" y="${y+3.5}" text-anchor="end" font-size="8" fill="${pct===100?'rgba(255,255,255,.5)':'rgba(255,255,255,.25)'}">${lbl}</text>`;
+  });
+
+  // bars
+  measuredKeys.forEach((key,i)=>{
+    const pct=pcts[i];
+    const x=padL+i*gap+(gap-barW)/2;
+    const barH2=Math.max(2,(pct/150)*chartH);
+    const y=padT+chartH-barH2;
+    const col=colors[i];
+    const r=3;
+    svg+=`<rect x="${x}" y="${y}" width="${barW}" height="${barH2}" fill="${col}" rx="${r}" ry="${r}"/>`;
+    const mpcY=padT+chartH-(100/150*chartH);
+    svg+=`<line x1="${x}" y1="${mpcY}" x2="${x+barW}" y2="${mpcY}" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-dasharray="3,2"/>`;
+    const displayPct=Math.round(pct);
+    svg+=`<text x="${x+barW/2}" y="${Math.max(y-4,padT+10)}" text-anchor="middle" font-size="9" fill="${col}" font-weight="700">${displayPct}%</text>`;
+    svg+=`<text x="${x+barW/2}" y="${padT+chartH+14}" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.55)">${labels[i]}</text>`;
+    const unit=T[lang].units[PDK[key].uk]||'';
+    const v=data[key];
+    const valStr=(v%1===0)?v:parseFloat(v.toFixed(2));
+    svg+=`<text x="${x+barW/2}" y="${padT+chartH+26}" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.35)">${valStr}${unit?` ${unit}`:''}</text>`;
+  });
+
+  // y-axis line
+  svg+=`<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+chartH}" stroke="rgba(255,255,255,.15)" stroke-width="1"/>`;
+  svg+=`<line x1="${padL}" y1="${padT+chartH}" x2="${W-padR}" y2="${padT+chartH}" stroke="rgba(255,255,255,.15)" stroke-width="1"/>`;
+
+  // y-axis title
+  svg+=`<text x="10" y="${padT+chartH/2}" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.35)" transform="rotate(-90,10,${padT+chartH/2})">${ct.pct}</text>`;
+
+  svg+='</svg>';
+  svgEl.outerHTML=svg;
+  // re-assign id since outerHTML replaces element
+  document.querySelector('.chart-wrap svg').id='chart-svg';
+}
+
+// ── HISTORY ───────────────────────────────────────────────────────────────────
+const HIST_KEY='aquametric_history';
+const HIST_T={
+  en:{title:'🗂️ Analysis History',clear:'🗑 Clear history',load:'Load',noHistory:'No saved analyses yet.',pdfBtn:'📄 Download PDF Report'},
+  ru:{title:'🗂️ История анализов',clear:'🗑 Очистить историю',load:'Загрузить',noHistory:'Сохранённых анализов пока нет.',pdfBtn:'📄 Скачать PDF отчёт'},
+  az:{title:'🗂️ Analiz tarixi',clear:'🗑 Tarixi sil',load:'Yüklə',noHistory:'Hələ saxlanılmış analiz yoxdur.',pdfBtn:'📄 PDF hesabat yüklə'},
+};
+const ORG_LABELS={
+  en:{colour:['—','Colourless','Slightly yellowish','Yellowish','Yellow','Brownish'],turbidity:['—','Transparent','Slightly turbid','Turbid','Very turbid','Opaque'],odour:['No odour','Very faint','Faint','Noticeable','Strong','Very strong'],taste:['No taste','Very faint','Faint','Noticeable','Strong','Very strong']},
+  ru:{colour:['—','Бесцветная','Слабо-желтоватая','Желтоватая','Жёлтая','Коричневатая'],turbidity:['—','Прозрачная','Слабо мутная','Мутная','Очень мутная','Непрозрачная'],odour:['Без запаха','Очень слабый','Слабый','Заметный','Сильный','Очень сильный'],taste:['Без привкуса','Очень слабый','Слабый','Заметный','Сильный','Очень сильный']},
+  az:{colour:['—','Rəngsiz','Zəif sarımtıl','Sarımtıl','Sarı','Qəhvəyi'],turbidity:['—','Şəffaf','Zəif bulanıq','Bulanıq','Çox bulanıq','Qeyri-şəffaf'],odour:['İysiz','Çox zəif','Zəif','Nəzərə çarpan','Güclü','Çox güclü'],taste:['Dadsız','Çox zəif','Zəif','Nəzərə çarpan','Güclü','Çox güclü']},
+};
+
+function saveToHistory(data,statuses,meta={}){
+  try{
+    const hist=JSON.parse(localStorage.getItem(HIST_KEY)||'[]');
+    const exceeded=Object.values(statuses).filter(s=>s==='bad').length;
+    const warning=Object.values(statuses).filter(s=>s==='warn').length;
+    hist.unshift({date:new Date().toLocaleString(),data,statuses,exceeded,warning,lang,meta});
+    if(hist.length>20)hist.pop();
+    localStorage.setItem(HIST_KEY,JSON.stringify(hist));
+    renderHistory();
+  }catch(e){}
+}
+
+function renderHistory(){
+  const ht=HIST_T[lang];
+  const block=document.getElementById('history-block');
+  const listEl=document.getElementById('history-list');
+  const titleEl=document.getElementById('t-history-title');
+  const clearEl=document.getElementById('t-history-clear');
+  if(titleEl)titleEl.textContent=ht.title;
+  if(clearEl)clearEl.textContent=ht.clear;
+  if(document.getElementById('t-btn-pdf'))document.getElementById('t-btn-pdf').textContent=ht.pdfBtn;
+  try{
+    const hist=JSON.parse(localStorage.getItem(HIST_KEY)||'[]');
+    if(hist.length===0){block.style.display='none';return;}
+    block.style.display='block';
+    listEl.innerHTML='';
+    hist.forEach((entry,idx)=>{
+      const t=T[lang];
+      const vColor=entry.exceeded>0?'var(--danger)':entry.warning>0?'var(--warn)':'var(--ok)';
+      const vText=entry.exceeded>0?`❌ ${entry.exceeded} exceeded`:entry.warning>0?`⚠️ ${entry.warning} near limit`:'✅ All OK';
+      const measured=Object.keys(entry.data).length;
+      const div=document.createElement('div');
+      div.className='hist-item';
+      div.innerHTML=`<div class="hist-meta"><span class="hist-date">📅 ${entry.date}</span><span class="hist-verdict" style="color:${vColor}">${vText}</span></div><div class="hist-params">${measured} parameters measured · click to reload</div>`;
+      div.onclick=()=>loadFromHistory(entry);
+      listEl.appendChild(div);
+    });
+  }catch(e){block.style.display='none';}
+}
+
+function loadFromHistory(entry){
+  // fill form fields
+  for(const key of Object.keys(PDK)){
+    const el=document.getElementById(key);
+    if(!el)continue;
+    if(entry.data[key]!==undefined){
+      if(el.tagName==='SELECT'){el.value=String(entry.data[key]);}
+      else{el.value=entry.data[key];}
+      el.className=entry.statuses[key]||'';
+    } else {
+      if(el.tagName==='SELECT')el.value='';
+      else{el.value='';el.className='';}
+    }
+  }
+  lastData=entry.data;lastStatuses=entry.statuses;
+  lastFilled=Object.keys(entry.data).length;lastTotal=Object.keys(PDK).length;
+  renderResults(entry.data,entry.statuses,lastFilled,lastTotal,entry.meta||{});
+}
+
+function clearHistory(){
+  try{localStorage.removeItem(HIST_KEY);}catch(e){}
+  document.getElementById('history-block').style.display='none';
+}
+
+// ── PDF EXPORT ─────────────────────────────────────────────────────────────────
+function exportPDF(){
+  if(!lastData){return;}
+  const t=T[lang];
+  const exceeded=Object.values(lastStatuses).filter(s=>s==='bad').length;
+  const warning=Object.values(lastStatuses).filter(s=>s==='warn').length;
+  const verdictText=exceeded>0?`${exceeded} parameter(s) exceeded MPC`:warning>0?`${warning} parameter(s) near limit`:'All parameters within limits';
+
+  let rows='';
+  for(const key of Object.keys(PDK)){
+    const p=PDK[key];
+    const unit=t.units[p.uk]||'';
+    const val=lastData[key];
+    const st=lastStatuses[key];
+    if(val===undefined){
+      rows+=`<tr><td>${t.ions[key]||key}</td><td style="color:#888;font-style:italic;">not measured</td><td></td><td></td></tr>`;
+    } else {
+      const stColor=st==='bad'?'#ff4455':st==='warn'?'#ffb800':'#00ff9d';
+      const stText=st==='bad'?'EXCEEDED':st==='warn'?'NEAR LIMIT':'OK';
+      let lim=p.type==='ph'?'6.5–8.5':p.type==='min'?`≥${p.limit}`:p.limit!==null?`≤${p.limit}`:'';
+      // organoleptic
+      const displayVal=p.org?`score ${val}`:`${val} ${unit}`;
+      rows+=`<tr><td>${t.ions[key]||key}${p.formula?' '+p.formula:''}</td><td>${displayVal}</td><td>${lim} ${unit}</td><td style="color:${stColor};font-weight:bold;">${stText}</td></tr>`;
+    }
+  }
+
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>AquaMetric Report</title>
+  <style>
+    body{font-family:Arial,sans-serif;padding:32px;color:#111;max-width:800px;margin:0 auto;}
+    h1{color:#0077aa;margin-bottom:4px;}
+    .subtitle{color:#555;font-size:13px;margin-bottom:24px;}
+    .verdict{padding:12px 16px;border-radius:8px;margin-bottom:24px;font-size:15px;font-weight:bold;
+      background:${exceeded>0?'#fff0f0':warning>0?'#fffbe6':'#f0fff4'};
+      border-left:4px solid ${exceeded>0?'#ff4455':warning>0?'#ffb800':'#00cc66'};}
+    table{width:100%;border-collapse:collapse;margin-bottom:24px;}
+    th{background:#0077aa;color:white;padding:8px 12px;text-align:left;font-size:13px;}
+    td{padding:7px 12px;border-bottom:1px solid #eee;font-size:13px;}
+    tr:nth-child(even){background:#f9f9f9;}
+    .footer{color:#999;font-size:11px;margin-top:32px;border-top:1px solid #eee;padding-top:12px;}
+    @media print{button{display:none;}}
+  </style></head><body>
+  <h1>💧 AquaMetric — Water Quality Report</h1>
+  <div class="subtitle">Generated: ${new Date().toLocaleString()} · Standards: WHO Drinking Water Guidelines · EU Directive 2020/2184</div>
+  <div class="verdict">${exceeded>0?'🔴':warning>0?'🟡':'✅'} ${verdictText}</div>
+  <table><thead><tr><th>Parameter</th><th>Measured Value</th><th>MPC Limit</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+  <div class="footer">AquaMetric · aquametric.github.io · Based on field research on Lake Dighyah, Absheron Peninsula, Azerbaijan</div>
+  <script>window.onload=()=>window.print();<\/script>
+  </body></html>`;
+
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='AquaMetric_Report.html';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+function resetForm(){for(const key of Object.keys(PDK)){const el=document.getElementById(key);if(el){if(el.tagName==='SELECT')el.value='';else{el.value='';el.className='';el.style.borderColor='';}}}['sample-id','water-body','sample-location','sample-date','sample-depth','sample-temp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const profile=document.getElementById('assessment-profile');if(profile)profile.value='drinking';updateProfileNote();lastData=null;lastStatuses=null;lastFilled=0;lastTotal=0;lastMeta={};document.getElementById('results').classList.remove('show');window.scrollTo({top:0,behavior:'smooth'});}
 applyLang();
+renderHistory();
 </script>
 </body>
 </html>
