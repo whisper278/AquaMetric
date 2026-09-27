@@ -1,5 +1,7 @@
 # AquaMetric — Digital Water Quality Assessment & Treatment Support Tool
 
+**Live demo:** [https://whisper278.github.io/AquaMetric/](https://whisper278.github.io/AquaMetric/)
+
 AquaMetric is a browser-based environmental tool for analysing measured water-quality data, comparing results with configured reference limits, visualising parameter status, and generating treatment-support recommendations.
 
 ## Quick start
@@ -11,11 +13,9 @@ npm run dev
 
 Open [http://127.0.0.1:43127](http://127.0.0.1:43127).
 
-No backend or database is required. You can also open `index.html` directly in a modern browser.
+No backend or database is required. You can also open `index.html` directly in a modern browser. Older frozen UI: `classic.html`.
 
 ## Background
-
-AquaMetric was developed in connection with field research on Lake Digah (Dighyah), Absheron Peninsula, Azerbaijan.
 
 Laboratory and field measurements produce large chemical and physical datasets. Interpreting those results, identifying exceeded parameters, and linking them to possible treatment approaches is time-consuming. AquaMetric turns measured results into an interactive assessment workflow:
 
@@ -110,7 +110,7 @@ Wide format (one sample per row):
 
 ```csv
 sample_id,water_body,location,date,depth,temperature,profile,CO3,HCO3,PO4,...
-LD-001,Lake Digah,Absheron,2024-06-15,0.5 m,24 °C,environmental,120,280,5.2,...
+S-001,Reservoir A,Site 1,2024-06-15,0.5 m,24 °C,environmental,120,280,5.2,...
 ```
 
 Tall format is also accepted (`parameter,value`). After import, review values and click **Analyse**.
@@ -124,7 +124,7 @@ The **Compare Samples** panel lets you pick Sample A and Sample B from analysis 
 - trend (improved / worsened / unchanged)
 - status change relative to MPC
 
-Useful for Digah time-series style checks between sampling dates.
+Useful for comparing samples across sampling dates.
 
 ## Treatment support
 
@@ -156,24 +156,21 @@ Treatment recommendations are technical support information, not automatically v
 
 ```
 AquaMetric/
-├── index.html          # App (light/dark themes)
-├── classic.html        # Frozen snapshot of earlier dark UI
-├── design-mockup.html  # Static design proposal mockup
+├── index.html       # Current app (light/dark themes)
+├── classic.html     # Frozen snapshot of earlier dark UI
 ├── package.json
 ├── vite.config.js
 └── README.md
 ```
 
-Theme preference is stored in `localStorage`. Open `classic.html` only if you want the older frozen layout.
+Theme preference is stored in `localStorage`. Open `classic.html` if you want the older layout.
 
 ## Author
 
 **Cavid Mammadov**  
 Baku State University · Faculty of Ecology and Soil Science  
 
-Project focus: Water Quality · Environmental Engineering · Environmental Data Analysis · AI-Assisted Development  
-
-Inspired by field research on Lake Digah, Absheron Peninsula, Azerbaijan.
+Project focus: Water Quality · Environmental Engineering · Environmental Data Analysis · AI-Assisted Development
 
 ## Disclaimer
 
