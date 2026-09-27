@@ -1,491 +1,180 @@
-💧 AquaMetric — Digital Water Quality Assessment & Treatment Support Tool
+# AquaMetric — Digital Water Quality Assessment & Treatment Support Tool
 
 AquaMetric is a browser-based environmental tool for analysing measured water-quality data, comparing results with configured reference limits, visualising parameter status, and generating treatment-support recommendations.
 
-🌐 Live Demo: https://whisper278.github.io/AquaMetric/index.html
+## Quick start
 
-Background & Motivation
+```bash
+npm install
+npm run dev
+```
+
+Open [http://127.0.0.1:43127](http://127.0.0.1:43127).
+
+No backend or database is required. You can also open `index.html` directly in a modern browser.
+
+## Background
 
 AquaMetric was developed in connection with field research on Lake Digah (Dighyah), Absheron Peninsula, Azerbaijan.
 
-The project grew from a practical problem encountered during water-quality research: laboratory measurements produce a large amount of chemical and physical data, while interpreting those results, identifying exceeded parameters, and connecting them to possible treatment approaches can be time-consuming.
-
-AquaMetric turns measured laboratory/field results into an interactive assessment workflow.
-
-Ecology → Water Chemistry → Environmental Assessment → Data Visualisation → Treatment Support → Web Development
-
-What AquaMetric Does
-
-Analyses measured water-quality parameters
-
-Compares measurements with configured MPC/reference limits
-
-Classifies parameters as Within Limit, Near Limit, or Exceeded
-
-Provides an overall assessment of the analysed sample
-
-Generates a Parameter vs MPC chart
-
-Screens water suitability for several use categories
-
-Screens for eutrophication-related concerns
-
-Generates a treatment sequence based on exceeded parameters
-
-Provides detailed treatment recommendations
-
-Explains possible causes of abnormal values
-
-Provides laboratory analytical methods where implemented
-
-Stores recent analyses locally in the browser
-
-Allows previous analyses to be loaded
-
-Generates a printable analysis report
-
-Supports English, Azerbaijani, and Russian
-
-Runs entirely in the browser without a backend or database
-
-Assessment Context
-
-The application records:
-
-Sample ID
-
-Water body
-
-Location
-
-Sampling date
-
-Sampling depth
-
-Water temperature
-
-It also provides three assessment profiles:
-
-Drinking Water
-
-Environmental / Surface Water Screening
-
-Custom / Research
-
-The environmental profile is explicitly presented as a screening context rather than a formal ecological classification.
-
-Parameters
-
-The current application contains 15 water-quality parameters.
-
-Parameter
-
-Formula / Unit
-
-Configured reference
-
-Carbonates
-
-CO₃²⁻ · mg/L
-
-≤ 300 mg/L
-
-Bicarbonates
-
-HCO₃⁻ · mg/L
-
-≤ 400 mg/L
-
-Phosphates
-
-PO₄³⁻ · mg/L
-
-≤ 3.5 mg/L
-
-Sulphates
-
-SO₄²⁻ · mg/L
-
-≤ 500 mg/L
-
-Chlorides
-
-Cl⁻ · mg/L
-
-≤ 350 mg/L
-
-Ammonium
-
-NH₄⁺ · mg/L
-
-≤ 0.5 mg/L
-
-Nitrates
-
-NO₃⁻ · mg/L
-
-≤ 45 mg/L
-
-Nitrites
-
-NO₂⁻ · mg/L
-
-≤ 3.3 mg/L
-
-Total Hardness
-
-meq/L
-
-≤ 7.0 meq/L
-
-Dissolved Oxygen
-
-O₂ · mg/L
-
-≥ 4.0 mg/L
-
-pH
-
-—
-
-6.5–8.5
-
-Colour
-
-degrees
-
-≤ 20°
-
-Turbidity
-
-NTU
-
-≤ 2.6 NTU
-
-Odour
-
-points
-
-≤ 2 points
-
-Taste
-
-points
-
-≤ 2 points
-
-Note: These are the reference values currently configured in the application. They should not be interpreted as a complete regulatory classification for every type of water body.
-
-Analysis Workflow
-
-Water sample
-     ↓
-Enter sample metadata
-     ↓
-Enter measured parameters
-     ↓
-Select assessment profile
-     ↓
-Analyse sample
-     ↓
-Parameter status classification
-     ↓
-Overall assessment
-     ↓
-Chart + detailed results
-     ↓
-Water-use screening
-     ↓
-Treatment sequence
-     ↓
-Detailed treatment recommendations
-     ↓
-Report export
-
-The application also identifies unmeasured parameters and indicates when an assessment is based on only part of the available parameter set.
-
-Treatment Support
-
-A major feature of the current version is the Treatment Sequence.
-
-When parameters exceed their configured limits, AquaMetric dynamically builds a sequence of potential treatment stages. Depending on the results, the sequence can include:
-
-Pre-filtration & solids removal
-
-pH correction
-
-Disinfection & organic removal
-
-Nitrate removal
-
-Softening
-
-Specific ion removal
-
-Phosphate removal
-
-Final aeration & oxygen restoration
-
-The application also contains detailed treatment information for individual parameters, including:
-
-Cause
-
-Possible causes of elevated or abnormal values.
-
-Treatment
-
-Potential treatment technologies and process approaches, including where implemented:
-
-Reverse osmosis
-
-Ion exchange
-
-Nanofiltration
-
-Electrodialysis
-
-Chemical precipitation
-
-Lime softening
-
-Aeration
-
-Biological treatment
-
-Disinfection
-
-Source-control measures
-
-Laboratory Method
-
-Where implemented, the application provides analytical methods, measurement principles, procedures, reagents, and laboratory notes.
-
-Treatment recommendations are technical support information, not automatically validated engineering designs. Actual treatment performance depends on the water matrix, concentration, flow rate, equipment, operating conditions, and engineering validation.
-
-Data Visualisation
-
-AquaMetric generates a Parameter vs MPC chart showing:
-
-measured parameters
-
-percentage relative to the configured reference
-
-parameter status
-
-the reference/MPC level
-
-measured values and units
-
-This provides a quick visual overview of parameters requiring attention.
-
-Analysis History
-
-The application uses browser localStorage for analysis history.
-
-It can:
-
-save recent analyses
-
-retain sample metadata and measured values
-
-display previous analyses
-
-reload previous analyses
-
-clear saved history
-
-The current implementation retains the most recent 20 analyses locally.
-
-No server-side database is required.
-
-Multilingual Interface
-
-The interface is available in:
-
-🇬🇧 English
-
-🇦🇿 Azerbaijani
-
-🇷🇺 Russian
-
-Reporting
-
-AquaMetric includes a report workflow containing:
-
-analysis date/time
-
-overall assessment
-
-measured values
-
-reference limits
-
-parameter status
-
-unmeasured parameters
-
-The current implementation provides a print-ready report that can be printed or saved through the browser.
-
-Standards & Reference Framework
+Laboratory and field measurements produce large chemical and physical datasets. Interpreting those results, identifying exceeded parameters, and linking them to possible treatment approaches is time-consuming. AquaMetric turns measured results into an interactive assessment workflow:
+
+**Ecology → Water Chemistry → Environmental Assessment → Data Visualisation → Treatment Support → Web Development**
+
+## What it does
+
+- Analyses measured water-quality parameters
+- Compares measurements with configured MPC / reference limits
+- Classifies parameters as Within Limit, Near Limit, or Exceeded
+- Provides an overall assessment of the analysed sample
+- Generates a Parameter vs MPC chart
+- Screens water suitability for several use categories
+- Screens for eutrophication-related concerns
+- Generates a treatment sequence based on exceeded parameters
+- Provides detailed treatment recommendations (cause, treatment, lab method)
+- Stores recent analyses in browser `localStorage` (last 20)
+- Imports and exports sample data as CSV
+- Compares two samples (history or current form) with parameter deltas
+- Generates a printable analysis report
+- Supports English, Azerbaijani, and Russian
+
+## Assessment context
+
+The application records sample metadata:
+
+- Sample ID
+- Water body
+- Location
+- Sampling date
+- Sampling depth
+- Water temperature
+
+Three assessment profiles:
+
+1. **Drinking Water**
+2. **Environmental / Surface Water Screening**
+3. **Custom / Research**
+
+The environmental profile is a screening context, not a formal ecological classification.
+
+## Parameters (15)
+
+| Parameter | Formula / Unit | Configured reference |
+|---|---|---|
+| Carbonates | CO₃²⁻ · mg/L | ≤ 300 mg/L |
+| Bicarbonates | HCO₃⁻ · mg/L | ≤ 400 mg/L |
+| Phosphates | PO₄³⁻ · mg/L | ≤ 3.5 mg/L |
+| Sulphates | SO₄²⁻ · mg/L | ≤ 500 mg/L |
+| Chlorides | Cl⁻ · mg/L | ≤ 350 mg/L |
+| Ammonium | NH₄⁺ · mg/L | ≤ 0.5 mg/L |
+| Nitrates | NO₃⁻ · mg/L | ≤ 45 mg/L |
+| Nitrites | NO₂⁻ · mg/L | ≤ 3.3 mg/L |
+| Total Hardness | meq/L | ≤ 7.0 meq/L |
+| Dissolved Oxygen | O₂ · mg/L | ≥ 4.0 mg/L |
+| pH | — | 6.5–8.5 |
+| Colour | degrees | ≤ 20° |
+| Turbidity | NTU | ≤ 2.6 NTU |
+| Odour | points | ≤ 2 points |
+| Taste | points | ≤ 2 points |
+
+These are the reference values currently configured in the application. They should not be interpreted as a complete regulatory classification for every type of water body.
+
+## Standards & reference framework
 
 The interface identifies:
 
-WHO Guidelines for Drinking-water Quality
+- WHO Guidelines for Drinking-water Quality (GDWQ 2026)
+- EU Drinking Water Directive 2020/2184
 
-EU Drinking Water Directive 2020/2184
+A normative comparison table shows how project limits relate to WHO and EU values where applicable. Drinking-water standards and ecological surface-water assessment are different contexts — AquaMetric does not treat drinking-water limits as a complete ecological classification system for lakes or rivers.
 
-The application uses configured reference values for automated comparison.
+## Themes
 
-Because drinking-water standards and ecological surface-water assessment are different contexts, AquaMetric does not treat drinking-water limits as a complete ecological classification system for lakes or rivers.
+AquaMetric supports **Light** and **Dark** themes (toggle in the top bar):
 
-Lake Digah Research Context
+- **Light** — coastal teal palette
+- **Dark** — classic AquaMetric neon-lab palette
 
-The project is inspired by field research conducted on Lake Digah, Absheron Peninsula, Azerbaijan.
+Secondary tools live under the **⋯** menu and open as separate screens (with Back):
 
-The research context included:
+- CSV import / export / template
+- Compare samples
+- Analysis history
+- WHO / EU standards reference
 
-spectrophotometric analysis
+## CSV import / export
 
-titrimetric analysis
+Use **Export CSV** / **Import CSV** from the **⋯** menu, or download the **CSV template**.
 
-Multiline Water Quality Meter 850081
+Wide format (one sample per row):
 
-AquaMetric provides a digital workflow for connecting measured water-quality data with assessment, visualisation, and treatment-support information.
+```csv
+sample_id,water_body,location,date,depth,temperature,profile,CO3,HCO3,PO4,...
+LD-001,Lake Digah,Absheron,2024-06-15,0.5 m,24 °C,environmental,120,280,5.2,...
+```
 
-Technology
+Tall format is also accepted (`parameter,value`). After import, review values and click **Analyse**.
 
-HTML5
+## Sample comparison
 
-CSS3
+The **Compare Samples** panel lets you pick Sample A and Sample B from analysis history (or the current form) and shows:
 
-Vanilla JavaScript
+- measured values side by side
+- absolute delta (Δ)
+- trend (improved / worsened / unchanged)
+- status change relative to MPC
 
-SVG-based visualisation
+Useful for Digah time-series style checks between sampling dates.
 
-Browser localStorage
+## Treatment support
 
-No backend
+When parameters exceed configured limits, AquaMetric builds a treatment sequence that may include:
 
-No database
+- Pre-filtration & solids removal
+- pH correction
+- Disinfection & organic removal
+- Nitrate removal
+- Softening
+- Specific ion removal
+- Phosphate removal
+- Final aeration & oxygen restoration
 
-No external JavaScript framework
+Detailed per-parameter information covers possible causes, treatment technologies, and laboratory methods where implemented.
 
-Single-file web application
+Treatment recommendations are technical support information, not automatically validated engineering designs.
 
-AI-Assisted Development
+## Technology
 
-AquaMetric was developed using an AI-assisted / vibe-coding workflow.
+- HTML5 / CSS3 / Vanilla JavaScript
+- SVG-based visualisation
+- Browser `localStorage`
+- Vite for local development
+- No backend, database, or external JS framework
+- Single-page web application (`index.html`)
 
-The environmental problem, water-quality parameters, assessment structure, treatment workflow, and scientific context were defined from the project requirements and environmental research context, while AI-assisted coding was used to implement and iterate the web application.
+## Project structure
 
-The project therefore demonstrates both environmental/water-quality domain knowledge and practical use of modern AI-assisted software development.
-
-Project Structure
-
+```
 AquaMetric/
-├── index.html
+├── index.html          # App (light/dark themes)
+├── classic.html        # Frozen snapshot of earlier dark UI
+├── design-mockup.html  # Static design proposal mockup
+├── package.json
+├── vite.config.js
 └── README.md
+```
 
-The application is contained in index.html, including the interface, styles, multilingual content, assessment logic, chart generation, treatment recommendations, treatment sequence logic, history, and reporting functionality.
+Theme preference is stored in `localStorage`. Open `classic.html` only if you want the older frozen layout.
 
-Running Locally
+## Author
 
-No installation is required.
+**Cavid Mammadov**  
+Baku State University · Faculty of Ecology and Soil Science  
 
-git clone https://github.com/whisper278/AquaMetric.git
-cd AquaMetric
-
-Then open index.html in a modern web browser.
-
-GitHub Pages
-
-The application is deployed as a static website using GitHub Pages.
-
-Live Demo:
-https://whisper278.github.io/AquaMetric/index.html
-
-Project Status
-
-Current version: research-oriented prototype
-
-The current version includes:
-
-Sample metadata
-
-Three assessment profiles
-
-15 parameters
-
-Multilingual interface
-
-Parameter classification
-
-Data visualisation
-
-Water-use screening
-
-Treatment sequence generation
-
-Treatment recommendations
-
-Laboratory-method information
-
-Local analysis history
-
-Report export
-
-WHO/EU reference framework
-
-Possible future development
-
-Stronger source citation for individual limits and treatment claims
-
-Additional environmental-water assessment frameworks
-
-Sample comparison and time-series analysis
-
-CSV import/export
-
-GIS-based sampling locations
-
-Expanded uncertainty/confidence information
-
-External database storage
-
-Python/Flask backend
-
-Advanced statistical analysis
-
-Integration with larger real-world laboratory datasets
-
-Further engineering validation of treatment recommendations
-
-Disclaimer
-
-AquaMetric is an educational and research-support prototype.
-
-It does not replace:
-
-certified laboratory analysis
-
-regulatory assessment
-
-professional environmental consulting
-
-drinking-water safety certification
-
-detailed water-treatment engineering design
-
-Treatment recommendations should be evaluated against the specific water matrix and validated through appropriate laboratory, pilot, and engineering testing before real-world implementation.
-
-Author
-
-Cavid Mammadov
-
-Baku State University
-Faculty of Ecology and Soil Science
-
-Project focus:
-Water Quality · Environmental Engineering · Environmental Data Analysis · AI-Assisted Development
+Project focus: Water Quality · Environmental Engineering · Environmental Data Analysis · AI-Assisted Development  
 
 Inspired by field research on Lake Digah, Absheron Peninsula, Azerbaijan.
+
+## Disclaimer
+
+AquaMetric is an educational and research-support prototype. It does not replace certified laboratory analysis, regulatory assessment, professional environmental consulting, drinking-water safety certification, or detailed water-treatment engineering design.
